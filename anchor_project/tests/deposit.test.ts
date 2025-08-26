@@ -1,15 +1,12 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
-import { getProgram, getVaultDefaultValues, getVaultPda } from './utils';
+import { getProgram, createAndInitializeVault } from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
+import { getDepositTx } from '../scripts/methods';
 
 describe('vault-deposit', () => {
-	// Configure the client to use the local cluster.
-
 	let program: Program<PlanVault>;
 	let ownerKeypair: web3.Keypair;
-	const defaultVaultValues = getVaultDefaultValues();
-	const { planTitle } = defaultVaultValues;
 
 	beforeAll(async () => {
 		const initalizedProgram = await getProgram();
@@ -18,34 +15,25 @@ describe('vault-deposit', () => {
 	});
 
 	it('Vault can be deposited!', async () => {
-		const { vaultPda, hashedTitle } = getVaultPda({
+		const planTitle = 'deposit-success';
+		const { vaultPda, hashedTitle } = await createAndInitializeVault({
+			program,
 			ownerKeypair,
 			planTitle,
-			program,
 		});
-
-		await program.methods
-			.initializeVault(planTitle)
-			.accountsPartial({
-				owner: ownerKeypair.publicKey,
-				vaultAccount: vaultPda,
-			})
-			.signers([ownerKeypair])
-			.rpc();
 
 		const vaultInitialBalance =
 			await program.provider.connection.getBalance(vaultPda);
 
 		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
 
-		await program.methods
-			.deposit(depositAmount)
-			.accountsPartial({
-				owner: ownerKeypair.publicKey,
-				vaultAccount: vaultPda,
-			})
-			.signers([ownerKeypair])
-			.rpc();
+		const { tx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+		await program.provider.sendAndConfirm?.(tx, [ownerKeypair]);
 
 		const storedVaultAfter = await program.account.vaultAccount.fetch(vaultPda);
 		const vaultBalance = await program.provider.connection.getBalance(vaultPda);
@@ -57,96 +45,72 @@ describe('vault-deposit', () => {
 	});
 
 	it('Cannot deposit zero', async () => {
-		const { vaultPda } = getVaultPda({
-			ownerKeypair,
-			planTitle: 'deposit-zero',
+		const planTitle = 'deposit-zero';
+		const { vaultPda } = await createAndInitializeVault({
 			program,
+			ownerKeypair,
+			planTitle,
 		});
-
-		await program.methods
-			.initializeVault('deposit-zero')
-			.accountsPartial({
-				owner: ownerKeypair.publicKey,
-				vaultAccount: vaultPda,
-			})
-			.signers([ownerKeypair])
-			.rpc();
 
 		const depositAmount = new BN(0);
 
+		const { tx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+
 		await expect(
-			program.methods
-				.deposit(depositAmount)
-				.accountsPartial({
-					owner: ownerKeypair.publicKey,
-					vaultAccount: vaultPda,
-				})
-				.signers([ownerKeypair])
-				.rpc(),
+			program.provider.sendAndConfirm?.(tx, [ownerKeypair]),
 		).rejects.toThrow();
 	});
 
 	it('Cannot deposit with insufficient funds', async () => {
-		const { vaultPda } = getVaultPda({
-			ownerKeypair,
-			planTitle: 'insufficient-funds',
+		const planTitle = 'insufficient-funds';
+		const { vaultPda } = await createAndInitializeVault({
 			program,
+			ownerKeypair,
+			planTitle,
 		});
-
-		await program.methods
-			.initializeVault('insufficient-funds')
-			.accountsPartial({
-				owner: ownerKeypair.publicKey,
-				vaultAccount: vaultPda,
-			})
-			.signers([ownerKeypair])
-			.rpc();
 
 		const ownerBalance = await program.provider.connection.getBalance(
 			ownerKeypair.publicKey,
 		);
 		const depositAmount = new BN(ownerBalance + 1);
 
+		const { tx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+
 		await expect(
-			program.methods
-				.deposit(depositAmount)
-				.accountsPartial({
-					owner: ownerKeypair.publicKey,
-					vaultAccount: vaultPda,
-				})
-				.signers([ownerKeypair])
-				.rpc(),
+			program.provider.sendAndConfirm?.(tx, [ownerKeypair]),
 		).rejects.toThrow();
 	});
 
 	it('Another user cannot deposit into the vault', async () => {
 		const anotherUser = web3.Keypair.generate();
-		const { vaultPda } = getVaultPda({
-			ownerKeypair,
-			planTitle: 'another-user-deposit',
+		const planTitle = 'another-user-deposit';
+		const { vaultPda } = await createAndInitializeVault({
 			program,
+			ownerKeypair,
+			planTitle,
 		});
-
-		await program.methods
-			.initializeVault('another-user-deposit')
-			.accountsPartial({
-				owner: ownerKeypair.publicKey,
-				vaultAccount: vaultPda,
-			})
-			.signers([ownerKeypair])
-			.rpc();
 
 		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
 
+		const { tx } = await getDepositTx({
+			program,
+			ownerPublicKey: anotherUser.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+
 		await expect(
-			program.methods
-				.deposit(depositAmount)
-				.accountsPartial({
-					owner: anotherUser.publicKey,
-					vaultAccount: vaultPda,
-				})
-				.signers([anotherUser])
-				.rpc(),
+			program.provider.sendAndConfirm?.(tx, [anotherUser]),
 		).rejects.toThrow();
 	});
 });

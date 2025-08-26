@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import {
 	AnchorProvider,
 	Program,
@@ -7,8 +6,8 @@ import {
 	workspace,
 } from '@coral-xyz/anchor';
 import { PlanVault } from '../target/types/plan_vault';
-
-export const ONE_SOL = 100_0000_000; // 1 SOL in lamports
+import { ONE_SOL } from '../scripts/utils';
+import { getInitializeVaultTx } from '../scripts/methods';
 
 export const getVaultDefaultValues = () => {
 	// vault default values
@@ -45,24 +44,22 @@ export const getProgram = async () => {
 	return { program, provider, wallets };
 };
 
-export const getVaultPda = ({
-	planTitle,
-	ownerKeypair,
+export const createAndInitializeVault = async ({
 	program,
+	ownerKeypair,
+	planTitle,
 }: {
-	planTitle: string;
-	ownerKeypair: web3.Keypair;
 	program: Program<PlanVault>;
+	ownerKeypair: web3.Keypair;
+	planTitle: string;
 }) => {
-	const hashedTitle = hashTitle({ planTitle });
-	const [vaultPda] = web3.PublicKey.findProgramAddressSync(
-		[Buffer.from('vault'), hashedTitle, ownerKeypair.publicKey.toBuffer()],
-		program.programId,
-	);
+	const { tx, vaultPda, hashedTitle } = await getInitializeVaultTx({
+		program,
+		ownerPublicKey: ownerKeypair.publicKey,
+		planTitle,
+	});
+
+	await program.provider.sendAndConfirm?.(tx, [ownerKeypair]);
 
 	return { vaultPda, hashedTitle };
-};
-
-export const hashTitle = ({ planTitle }: { planTitle: string }) => {
-	return createHash('sha256').update(planTitle, 'utf8').digest();
 };
