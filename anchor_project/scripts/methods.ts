@@ -1,6 +1,6 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
 import { PlanVault } from '../target/types/plan_vault';
-import { getVaultPda } from './utils';
+import { getPlanPda, getVaultPda } from './utils';
 
 export const getInitializeVaultTx = async ({
 	program,
@@ -53,19 +53,27 @@ export const getSubmitPlanTx = async ({
 	program,
 	ownerPublicKey,
 	vaultPda,
+	args,
 }: {
 	program: Program<PlanVault>;
 	ownerPublicKey: web3.PublicKey;
 	vaultPda: web3.PublicKey;
+	args: any;
 }) => {
+	const { planPda } = getPlanPda({
+		vaultPublicKey: vaultPda,
+		program,
+	});
+
 	const tx = await program.methods
-		.submitPlan()
+		.submitPlan(args)
 		.accountsPartial({
 			owner: ownerPublicKey,
 			vaultAccount: vaultPda,
+			plan: planPda,
 		})
 		.transaction();
-	return { tx };
+	return { tx, planPda };
 };
 
 export const getWithdrawTx = async ({

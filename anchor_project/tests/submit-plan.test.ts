@@ -1,5 +1,10 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
-import { getProgram, createAndInitializeVault } from './test-helpers';
+import {
+	getProgram,
+	createAndInitializeVault,
+	getDefaultPlanArgs,
+	txSendAndConfirm,
+} from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
 import { getDepositTx, getSubmitPlanTx } from '../scripts/methods';
@@ -29,17 +34,23 @@ describe('submit-plan', () => {
 			vaultPda,
 			amount: depositAmount,
 		});
-		await program.provider.sendAndConfirm?.(depositTx, [ownerKeypair]);
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
-		const { tx: submitTx } = await getSubmitPlanTx({
+		const args = getDefaultPlanArgs();
+		const { tx: submitTx, planPda } = await getSubmitPlanTx({
 			program,
 			ownerPublicKey: ownerKeypair.publicKey,
 			vaultPda,
+			args,
 		});
-		await program.provider.sendAndConfirm?.(submitTx, [ownerKeypair]);
+		await txSendAndConfirm(program, submitTx, [ownerKeypair]);
 
 		const storedVault = await program.account.vaultAccount.fetch(vaultPda);
 		expect(storedVault.status).toEqual({ unlocked: {} });
+
+		const storedPlan = await program.account.plan.fetch(planPda);
+		expect(storedPlan.planTitle).toEqual(args.planTitle);
+		expect(storedPlan.ticker).toEqual(args.ticker);
 	});
 
 	it('Should fail to submit a plan with insufficient funds', async () => {
@@ -50,14 +61,16 @@ describe('submit-plan', () => {
 			planTitle,
 		});
 
+		const args = getDefaultPlanArgs();
 		const { tx } = await getSubmitPlanTx({
 			program,
 			ownerPublicKey: ownerKeypair.publicKey,
 			vaultPda,
+			args,
 		});
 
 		await expect(
-			program.provider.sendAndConfirm?.(tx, [ownerKeypair]),
+			txSendAndConfirm(program, tx, [ownerKeypair]),
 		).rejects.toThrow();
 	});
 
@@ -70,14 +83,76 @@ describe('submit-plan', () => {
 			planTitle,
 		});
 
+		const args = getDefaultPlanArgs();
 		const { tx } = await getSubmitPlanTx({
 			program,
 			ownerPublicKey: anotherUser.publicKey,
 			vaultPda,
+			args,
 		});
 
 		await expect(
-			program.provider.sendAndConfirm?.(tx, [anotherUser]),
+			txSendAndConfirm(program, tx, [anotherUser]),
+		).rejects.toThrow();
+	});
+
+	it('Should fail with long plan title', async () => {
+		const planTitle = 'long-title-submit';
+		const { vaultPda } = await createAndInitializeVault({
+			program,
+			ownerKeypair,
+			planTitle,
+		});
+
+		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+		const { tx: depositTx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
+
+		const args = { ...getDefaultPlanArgs(), planTitle: 'a'.repeat(101) };
+
+		const { tx: submitTx } = await getSubmitPlanTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			args,
+		});
+		await expect(
+			txSendAndConfirm(program, submitTx, [ownerKeypair]),
+		).rejects.toThrow();
+	});
+
+	it('Should fail with long ticker', async () => {
+		const planTitle = 'long-ticker-submit';
+		const { vaultPda } = await createAndInitializeVault({
+			program,
+			ownerKeypair,
+			planTitle,
+		});
+
+		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+		const { tx: depositTx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
+
+		const args = { ...getDefaultPlanArgs(), ticker: 'a'.repeat(11) };
+
+		const { tx: submitTx } = await getSubmitPlanTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			args,
+		});
+		await expect(
+			txSendAndConfirm(program, submitTx, [ownerKeypair]),
 		).rejects.toThrow();
 	});
 });

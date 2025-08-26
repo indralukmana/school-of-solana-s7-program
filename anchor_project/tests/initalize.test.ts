@@ -1,8 +1,11 @@
 import { Program, web3 } from '@coral-xyz/anchor';
-import { getProgram, getVaultDefaultValues, createAndInitializeVault } from './test-helpers';
+import {
+	getProgram,
+	getVaultDefaultValues,
+	createAndInitializeVault,
+} from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
-import { getInitializeVaultTx } from '../scripts/methods';
 
 describe('vault-initialize', () => {
 	let program: Program<PlanVault>;
@@ -58,11 +61,13 @@ describe('vault-initialize', () => {
 
 	it('Cannot be initialized with empty title', async () => {
 		const shortTitle = '';
-		await expect(createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle: shortTitle,
-		})).rejects.toThrow();
+		await expect(
+			createAndInitializeVault({
+				program,
+				ownerKeypair,
+				planTitle: shortTitle,
+			}),
+		).rejects.toThrow();
 	});
 
 	it('Should fail when the vault is already initialized', async () => {
@@ -73,11 +78,13 @@ describe('vault-initialize', () => {
 			planTitle,
 		});
 
-		await expect(createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		})).rejects.toThrow();
+		await expect(
+			createAndInitializeVault({
+				program,
+				ownerKeypair,
+				planTitle,
+			}),
+		).rejects.toThrow();
 	});
 
 	it('Can be initialized with a 200-character title', async () => {
@@ -95,19 +102,23 @@ describe('vault-initialize', () => {
 
 	it('Cannot be initialized with a title longer than 200 characters', async () => {
 		const longTitle = 'a'.repeat(201);
-		await expect(createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle: longTitle,
-		})).rejects.toThrow();
+		await expect(
+			createAndInitializeVault({
+				program,
+				ownerKeypair,
+				planTitle: longTitle,
+			}),
+		).rejects.toThrow();
 	});
 
 	it('Cannot be initialized with a title shorter than 3 characters', async () => {
 		const shortTitle = 'aa';
-		await expect(createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle: shortTitle,
-		})).rejects.toThrow();
+		await expect(
+			createAndInitializeVault({
+				program,
+				ownerKeypair,
+				planTitle: shortTitle,
+			}),
+		).rejects.toThrow();
 	});
 });

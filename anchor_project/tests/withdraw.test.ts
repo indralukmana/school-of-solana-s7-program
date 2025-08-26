@@ -1,6 +1,12 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
-import { getProgram, createAndInitializeVault } from './test-helpers';
+import {
+	getProgram,
+	createAndInitializeVault,
+	getDefaultPlanArgs,
+	txSendAndConfirm,
+} from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
+import { describe, it, expect, beforeAll } from 'vitest';
 import {
 	getDepositTx,
 	getSubmitPlanTx,
@@ -32,14 +38,16 @@ describe('withdraw', () => {
 			vaultPda,
 			amount: depositAmount,
 		});
-		await program.provider.sendAndConfirm?.(depositTx, [ownerKeypair]);
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
+		const args = getDefaultPlanArgs();
 		const { tx: submitTx } = await getSubmitPlanTx({
 			program,
 			ownerPublicKey: ownerKeypair.publicKey,
 			vaultPda,
+			args,
 		});
-		await program.provider.sendAndConfirm?.(submitTx, [ownerKeypair]);
+		await txSendAndConfirm(program, submitTx, [ownerKeypair]);
 
 		const ownerBalanceBefore = await program.provider.connection.getBalance(
 			ownerKeypair.publicKey,
@@ -52,7 +60,7 @@ describe('withdraw', () => {
 			ownerPublicKey: ownerKeypair.publicKey,
 			vaultPda,
 		});
-		await program.provider.sendAndConfirm?.(withdrawTx, [ownerKeypair]);
+		await txSendAndConfirm(program, withdrawTx, [ownerKeypair]);
 
 		const ownerBalanceAfter = await program.provider.connection.getBalance(
 			ownerKeypair.publicKey,
@@ -93,7 +101,7 @@ describe('withdraw', () => {
 			vaultPda,
 			amount: depositAmount,
 		});
-		await program.provider.sendAndConfirm?.(depositTx, [ownerKeypair]);
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
 		const { tx: withdrawTx } = await getWithdrawTx({
 			program,
@@ -102,7 +110,7 @@ describe('withdraw', () => {
 		});
 
 		await expect(
-			program.provider.sendAndConfirm?.(withdrawTx, [ownerKeypair]),
+			txSendAndConfirm(program, withdrawTx, [ownerKeypair]),
 		).rejects.toThrow();
 	});
 
@@ -122,14 +130,16 @@ describe('withdraw', () => {
 			vaultPda,
 			amount: depositAmount,
 		});
-		await program.provider.sendAndConfirm?.(depositTx, [ownerKeypair]);
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
+		const args = getDefaultPlanArgs();
 		const { tx: submitTx } = await getSubmitPlanTx({
 			program,
 			ownerPublicKey: ownerKeypair.publicKey,
 			vaultPda,
+			args,
 		});
-		await program.provider.sendAndConfirm?.(submitTx, [ownerKeypair]);
+		await txSendAndConfirm(program, submitTx, [ownerKeypair]);
 
 		const { tx: withdrawTx } = await getWithdrawTx({
 			program,
@@ -138,7 +148,7 @@ describe('withdraw', () => {
 		});
 
 		await expect(
-			program.provider.sendAndConfirm?.(withdrawTx, [anotherUser]),
+			txSendAndConfirm(program, withdrawTx, [anotherUser]),
 		).rejects.toThrow();
 	});
 });

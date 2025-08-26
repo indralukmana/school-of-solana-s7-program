@@ -4,16 +4,37 @@ import {
 	setProvider,
 	web3,
 	workspace,
+	BN,
 } from '@coral-xyz/anchor';
 import { PlanVault } from '../target/types/plan_vault';
 import { ONE_SOL } from '../scripts/utils';
 import { getInitializeVaultTx } from '../scripts/methods';
+
+export const txSendAndConfirm = async (
+	program: Program<PlanVault>,
+	tx: web3.Transaction,
+	signers: web3.Keypair[],
+) => {
+	return await program.provider.sendAndConfirm?.(tx, signers);
+};
 
 export const getVaultDefaultValues = () => {
 	// vault default values
 	const planTitle = 'Initial Example Plan';
 
 	return { planTitle };
+};
+
+export const getDefaultPlanArgs = () => {
+	return {
+		planTitle: 'My Test Plan',
+		tradingPlatform: 'Jupiter',
+		riskLevel: 'High',
+		ticker: 'SOL',
+		investmentAmount: new BN(ONE_SOL),
+		stopLoss: 0.9,
+		takeProfit: 1.5,
+	};
 };
 
 export const getProgram = async () => {
@@ -59,7 +80,7 @@ export const createAndInitializeVault = async ({
 		planTitle,
 	});
 
-	await program.provider.sendAndConfirm?.(tx, [ownerKeypair]);
+	await txSendAndConfirm(program, tx, [ownerKeypair]);
 
 	return { vaultPda, hashedTitle };
 };

@@ -1,5 +1,5 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
-import { getProgram, createAndInitializeVault } from './test-helpers';
+import { getProgram, createAndInitializeVault, txSendAndConfirm } from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
 import { getDepositTx } from '../scripts/methods';
@@ -33,7 +33,7 @@ describe('vault-deposit', () => {
 			vaultPda,
 			amount: depositAmount,
 		});
-		await program.provider.sendAndConfirm?.(tx, [ownerKeypair]);
+		await txSendAndConfirm(program, tx, [ownerKeypair]);
 
 		const storedVaultAfter = await program.account.vaultAccount.fetch(vaultPda);
 		const vaultBalance = await program.provider.connection.getBalance(vaultPda);
@@ -61,9 +61,7 @@ describe('vault-deposit', () => {
 			amount: depositAmount,
 		});
 
-		await expect(
-			program.provider.sendAndConfirm?.(tx, [ownerKeypair]),
-		).rejects.toThrow();
+		await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow();
 	});
 
 	it('Cannot deposit with insufficient funds', async () => {
@@ -86,9 +84,7 @@ describe('vault-deposit', () => {
 			amount: depositAmount,
 		});
 
-		await expect(
-			program.provider.sendAndConfirm?.(tx, [ownerKeypair]),
-		).rejects.toThrow();
+		await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow();
 	});
 
 	it('Another user cannot deposit into the vault', async () => {
@@ -109,8 +105,6 @@ describe('vault-deposit', () => {
 			amount: depositAmount,
 		});
 
-		await expect(
-			program.provider.sendAndConfirm?.(tx, [anotherUser]),
-		).rejects.toThrow();
+		await expect(txSendAndConfirm(program, tx, [anotherUser])).rejects.toThrow();
 	});
 });

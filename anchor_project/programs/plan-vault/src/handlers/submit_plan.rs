@@ -2,7 +2,8 @@ use anchor_lang::prelude::*;
 
 use crate::{
     error::SubmitPlanErrors,
-    state::{VaultAccount, VaultStatus},
+    state::{Plan, VaultAccount, VaultStatus},
+    PLAN_SEED,
 };
 
 #[derive(Accounts)]
@@ -12,10 +13,31 @@ pub struct SubmitPlan<'info> {
 
     #[account(mut, signer)]
     pub owner: Signer<'info>, // The user's wallet, need to sign
+
+    #[account(init,
+    payer = owner,
+    space = 8 + Plan::INIT_SPACE,
+    seeds = [PLAN_SEED.as_bytes(), vault_account.key().as_ref()],
+    bump
+    )]
+    pub plan: Account<'info, Plan>,
+
     pub system_program: Program<'info, System>,
 }
 
-pub fn submit_plan_handler(ctx: Context<SubmitPlan>) -> Result<()> {
+// Named-parameters for creating a Plan
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct PlanArgs {
+    pub plan_title: String,
+    pub trading_platform: String,
+    pub risk_level: String,
+    pub ticker: String,
+    pub investment_amount: u64,
+    pub stop_loss: f64,
+    pub take_profit: f64,
+}
+
+pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<()> {
     let vault = &mut ctx.accounts.vault_account;
 
     // Current lamports in the vault account
@@ -32,6 +54,24 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>) -> Result<()> {
         SubmitPlanErrors::InsufficientVaultFunds
     );
     vault.status = VaultStatus::Unlocked;
+
+    let plan = &mut ctx.accounts.plan;
+
+    require!(args.plan_title.len() <= 100, SubmitPlanErrors::TooLong);
+    require!(
+        args.trading_platform.len() <= 100,
+        SubmitPlanErrors::TooLong
+    );
+    require!(args.risk_level.len() <= 100, SubmitPlanErrors::TooLong);
+    require!(args.ticker.len() <= 10, SubmitPlanErrors::TooLong);
+
+    plan.plan_title = args.plan_title;
+    plan.trading_platform = args.trading_platform;
+    plan.risk_level = args.risk_level;
+    plan.ticker = args.ticker;
+    plan.investment_amount = args.investment_amount;
+    plan.stop_loss = args.stop_loss;
+    plan.take_profit = args.take_profit;
 
     Ok(())
 }

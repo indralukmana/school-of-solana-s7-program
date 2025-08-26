@@ -2,7 +2,7 @@ use crate::state::VaultStatus;
 use anchor_lang::prelude::*;
 use sha2::{Digest, Sha256};
 
-use crate::{constants::SEED, error::InitializeErrors, state::VaultAccount};
+use crate::{constants::VAULT_SEED, error::InitializeErrors, state::VaultAccount};
 
 #[derive(Accounts)]
 #[instruction(plan_title: String)]
@@ -14,7 +14,7 @@ pub struct InitializeVault<'info> {
         init, // create the account,
         payer = owner, // who pays for the account creation
         space = 8 + VaultAccount::INIT_SPACE,
-        seeds = [SEED.as_bytes(), &Sha256::digest(plan_title.as_bytes())[..], owner.key().as_ref()],
+        seeds = [VAULT_SEED.as_bytes(), &Sha256::digest(plan_title.as_bytes())[..], owner.key().as_ref()],
         bump
     )]
     pub vault_account: Account<'info, VaultAccount>,

@@ -1,3 +1,5 @@
+use crate::state::Plan;
+
 use super::enums::VaultStatus;
 use anchor_lang::prelude::*;
 
@@ -8,4 +10,5 @@ pub struct VaultAccount {
     pub status: VaultStatus,
     pub token_vault: Pubkey,
     pub plan_title_hash: [u8; 32],
+    pub plan: Plan,
 }

@@ -31,4 +31,6 @@ pub enum WithdrawErrors {
 pub enum SubmitPlanErrors {
     #[msg("Vault funds must be greater than 0")]
     InsufficientVaultFunds,
+    #[msg("Input string exceeds max length")]
+    TooLong,
 }
