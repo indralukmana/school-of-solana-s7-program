@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import {
 	AnchorProvider,
 	Program,
@@ -42,4 +43,26 @@ export const getProgram = async () => {
 	const wallets = { ownerKeypair };
 
 	return { program, provider, wallets };
+};
+
+export const getVaultPda = ({
+	planTitle,
+	ownerKeypair,
+	program,
+}: {
+	planTitle: string;
+	ownerKeypair: web3.Keypair;
+	program: Program<PlanVault>;
+}) => {
+	const hashedTitle = hashTitle({ planTitle });
+	const [vaultPda] = web3.PublicKey.findProgramAddressSync(
+		[Buffer.from('vault'), hashedTitle, ownerKeypair.publicKey.toBuffer()],
+		program.programId,
+	);
+
+	return { vaultPda, hashedTitle };
+};
+
+export const hashTitle = ({ planTitle }: { planTitle: string }) => {
+	return createHash('sha256').update(planTitle, 'utf8').digest();
 };

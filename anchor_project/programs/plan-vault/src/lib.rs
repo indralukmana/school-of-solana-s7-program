@@ -20,4 +20,8 @@ pub mod plan_vault {
     pub fn initialize_vault(ctx: Context<InitializeVault>, plan_title: String) -> Result<()> {
         initialize_handler(ctx, plan_title)
     }
+
+    pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
+        deposit_handler(ctx, amount)
+    }
 }
