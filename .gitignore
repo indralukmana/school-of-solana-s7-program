@@ -1,0 +1,5 @@
+anchor_project/.anchor
+anchor_project/target
+**/*.rs.bk
+**/node_modules
+**/test-ledger
