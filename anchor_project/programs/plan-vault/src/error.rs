@@ -20,3 +20,15 @@ pub enum DepositErrors {
     #[msg("Must transfer more than 0")]
     MustTransferMoreThanZero,
 }
+
+#[error_code]
+pub enum WithdrawErrors {
+    #[msg("Vault is locked")]
+    VaultLocked,
+}
+
+#[error_code]
+pub enum SubmitPlanErrors {
+    #[msg("Vault funds must be greater than 0")]
+    InsufficientVaultFunds,
+}

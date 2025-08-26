@@ -24,4 +24,12 @@ pub mod plan_vault {
     pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
         deposit_handler(ctx, amount)
     }
+
+    pub fn submit_plan(ctx: Context<SubmitPlan>) -> Result<()> {
+        submit_plan_handler(ctx)
+    }
+
+    pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
+        withdraw_handler(ctx)
+    }
 }
