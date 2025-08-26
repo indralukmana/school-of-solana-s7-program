@@ -67,3 +67,22 @@ export const getSubmitPlanTx = async ({
 		.transaction();
 	return { tx };
 };
+
+export const getWithdrawTx = async ({
+	program,
+	ownerPublicKey,
+	vaultPda,
+}: {
+	program: Program<PlanVault>;
+	ownerPublicKey: web3.PublicKey;
+	vaultPda: web3.PublicKey;
+}) => {
+	const tx = await program.methods
+		.withdraw()
+		.accountsPartial({
+			owner: ownerPublicKey,
+			vaultAccount: vaultPda,
+		})
+		.transaction();
+	return { tx };
+};
