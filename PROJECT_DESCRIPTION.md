@@ -2,78 +2,143 @@
 
 **Deployed Frontend URL:** [TODO: Link to your deployed frontend]
 
-**Solana Program ID:** [TODO: Your deployed program's public key]
+**Solana Program ID:** AMUvCRdBydMJ5jpYcBFFtFuwEpFCLFrbk5qByhmnzjy8
 
 ## Project Overview
 
 ### Description
-[TODO: Provide a comprehensive description of your dApp. Explain what it does. Be detailed about the core functionality.]
+
+This project is a decentralized trading diary with a commitment vault. Users can
+create a vault for a specific trading plan, deposit SOL as a commitment, and
+then, after submitting a detailed trading plan, withdraw the funds to execute
+the trade. The vault remains locked until the plan is submitted, enforcing a
+disciplined approach to trading.
 
 ### Key Features
-[TODO: List the main features of your dApp. Be specific about what users can do.]
 
-- Feature 1: [Description]
-- Feature 2: [Description]
-- ...
-  
+- **Create Vault**: Initialize a new vault for a trading plan.
+- **Deposit SOL**: Add funds to the vault.
+- **Submit Trading Plan**: Submit a detailed trading plan, which unlocks the
+  vault.
+- **Withdraw SOL**: Withdraw funds from the unlocked vault to execute the trade.
+
 ### How to Use the dApp
-[TODO: Provide step-by-step instructions for users to interact with your dApp]
 
 1. **Connect Wallet**
-2. **Main Action 1:** [Step-by-step instructions]
-3. **Main Action 2:** [Step-by-step instructions]
-4. ...
+2. **Create a Vault:** Provide a title for your trading plan to create a new
+   vault.
+3. **Deposit Funds:** Deposit SOL into the vault.
+4. **Submit Plan:** Submit your detailed trading plan. This will unlock your
+   vault.
+5. **Withdraw Funds:** Withdraw the SOL from your vault to your wallet.
 
 ## Program Architecture
-[TODO: Describe your Solana program's architecture. Explain the main instructions, account structures, and data flow.]
+
+The program is built around the concept of a vault that holds funds until a
+trading plan is submitted. It uses PDAs to create unique accounts for each vault
+and plan.
 
 ### PDA Usage
-[TODO: Explain how you implemented Program Derived Addresses (PDAs) in your project. What seeds do you use and why?]
 
 **PDAs Used:**
-- PDA 1: [Purpose and description]
-- PDA 2: [Purpose and description]
+
+- **Vault PDA**: Derived from the seeds
+  `["vault", sha256(plan_title), user_wallet_pubkey]`. This ensures that each
+  user has a unique vault for each trading plan title.
+- **Plan PDA**: Derived from the seeds `["plan", vault_pda_pubkey]`. This links
+  a specific plan to a vault.
 
 ### Program Instructions
-[TODO: List and describe all the instructions in your Solana program]
 
 **Instructions Implemented:**
-- Instruction 1: [Description of what it does]
-- Instruction 2: [Description of what it does]
-- ...
+
+- `initialize_vault`: Creates a new vault account for a user, identified by a
+  plan title.
+- `deposit`: Allows the user to deposit SOL into their vault.
+- `submit_plan`: Allows the user to submit a trading plan, which unlocks the
+  vault for withdrawal.
+- `withdraw`: Allows the user to withdraw the unlocked funds from the vault.
 
 ### Account Structure
-[TODO: Describe your main account structures and their purposes]
 
 ```rust
-// Example account structure (replace with your actual structs)
 #[account]
-pub struct YourAccountName {
-    // Describe each field
+pub struct VaultAccount {
+    pub owner: Pubkey,
+    pub status: VaultStatus,
+    pub token_vault: Pubkey,
+    pub plan_title_hash: [u8; 32],
+    pub plan: Plan,
+}
+
+#[account]
+pub struct Plan {
+    pub plan_title: String,
+    pub trading_platform: String,
+    pub risk_level: String,
+    pub ticker: String,
+    pub investment_amount: u64,
+    pub stop_loss: f64,
+    pub take_profit: f64,
 }
 ```
 
 ## Testing
 
 ### Test Coverage
-[TODO: Describe your testing approach and what scenarios you covered]
+
+The tests cover all the instructions and their various scenarios.
 
 **Happy Path Tests:**
-- Test 1: [Description]
-- Test 2: [Description]
-- ...
+
+- **Initialize Vault**
+  - Successfully creates a new vault account, setting the correct owner,
+    `plan_title_hash`, and an initial `Locked` status.
+  - Successfully initializes with titles of various valid lengths (from 3 to 200
+    characters).
+- **Deposit**
+  - A user can successfully deposit SOL, and the vault's lamport balance
+    increases by the deposited amount.
+- **Submit Plan**
+  - A user can submit a valid plan to a vault with a positive SOL balance (above
+    rent).
+  - Successfully stores the plan's data in the new `plan` account.
+  - The vault's status correctly changes from `Locked` to `Unlocked`.
+- **Withdraw**
+  - The owner can successfully withdraw the available SOL from an unlocked
+    vault.
+  - The vault's balance is reduced to the rent-exempt minimum, and the owner's
+    wallet balance increases by the withdrawn amount.
 
 **Unhappy Path Tests:**
-- Test 1: [Description of error scenario]
-- Test 2: [Description of error scenario]
-- ...
+
+- **Initialize**
+  - Fails to initialize a vault with an empty, too short (<3 chars), or too long
+    (>200 chars) title.
+  - Fails when trying to initialize a vault that already exists for the same
+    user and title.
+- **Deposit**
+  - Fails on a zero-amount deposit.
+  - Fails if the depositor has insufficient funds.
+  - Fails if a non-owner tries to deposit into the vault.
+- **Submit Plan**
+  - Fails if the vault has insufficient funds (i.e., only rent-exempt balance).
+  - Fails if a non-owner tries to submit a plan.
+  - Fails if the `plan_title` or `ticker` in the arguments exceed their maximum
+    allowed length.
+- **Withdraw**
+  - Fails if the vault is still in a `Locked` state (plan not submitted).
+  - Fails if a non-owner tries to withdraw funds.
 
 ### Running Tests
+
 ```bash
-# Commands to run your tests
 anchor test
 ```
 
 ### Additional Notes for Evaluators
 
-[TODO: Add any specific notes or context that would help evaluators understand your project better]
+This project uses native SOL for the vault. A potential future enhancement would
+be to support SPL tokens, such as stablecoins, for the trading funds. The
+current implementation uses the plan title to derive the vault PDA, which means
+a user can have multiple vaults for different trading ideas.
