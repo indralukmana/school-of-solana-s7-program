@@ -25,7 +25,6 @@ pub struct InitializeVault<'info> {
 pub fn initialize_handler(ctx: Context<InitializeVault>, plan_title: String) -> Result<()> {
     require!(plan_title.len() >= 3, InitializeErrors::TitleTooShort);
     require!(plan_title.len() <= 200, InitializeErrors::TitleTooLong);
-    require!(!plan_title.is_empty(), InitializeErrors::EmptyTitle);
 
     let vault = &mut ctx.accounts.vault_account;
     vault.owner = *ctx.accounts.owner.key;

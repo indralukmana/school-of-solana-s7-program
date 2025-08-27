@@ -6,8 +6,6 @@ pub enum InitializeErrors {
     TitleTooShort,
     #[msg("Title must not exceed 200 characters")]
     TitleTooLong,
-    #[msg("Title must not be empty")]
-    EmptyTitle,
 }
 
 // Deposit errors
