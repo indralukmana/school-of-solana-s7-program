@@ -1,23 +1,23 @@
 'use client'
 
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useState } from 'react';
-import { AppHero } from '../app-hero';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { useInitializeVault } from '@/hooks/use-initialize-vault';
+import { useWallet } from '@solana/wallet-adapter-react'
+import { useState } from 'react'
+import { AppHero } from '../app-hero'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
+import { useInitializeVault } from '@/hooks/use-initialize-vault'
 
 export function DashboardFeature() {
-  const { publicKey } = useWallet();
-  const [planTitle, setPlanTitle] = useState('');
-  const initializeVault = useInitializeVault();
+  const { publicKey } = useWallet()
+  const [planTitle, setPlanTitle] = useState('')
+  const initializeVault = useInitializeVault()
 
   const handleCreate = () => {
-    if (!planTitle) return;
+    if (!planTitle) return
     initializeVault.mutate(planTitle, {
       onSuccess: () => setPlanTitle(''),
-    });
-  };
+    })
+  }
 
   return (
     <div>
@@ -38,10 +38,7 @@ export function DashboardFeature() {
                 minLength={3}
                 maxLength={200}
               />
-              <Button
-                disabled={!planTitle || initializeVault.isPending}
-                onClick={handleCreate}
-              >
+              <Button disabled={!planTitle || initializeVault.isPending} onClick={handleCreate}>
                 {initializeVault.isPending ? 'Creating...' : 'Create Vault'}
               </Button>
             </div>
@@ -53,6 +50,5 @@ export function DashboardFeature() {
         )}
       </div>
     </div>
-  );
+  )
 }
-

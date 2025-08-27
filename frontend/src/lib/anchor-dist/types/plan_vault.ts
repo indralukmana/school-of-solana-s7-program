@@ -5,395 +5,312 @@
  * IDL can be found at `target/idl/plan_vault.json`.
  */
 export type PlanVault = {
-  "address": "2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH",
-  "metadata": {
-    "name": "planVault",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
-  },
-  "instructions": [
+  address: '2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH'
+  metadata: {
+    name: 'planVault'
+    version: '0.1.0'
+    spec: '0.1.0'
+    description: 'Created with Anchor'
+  }
+  instructions: [
     {
-      "name": "closeVault",
-      "discriminator": [
-        141,
-        103,
-        17,
-        126,
-        72,
-        75,
-        29,
-        29
-      ],
-      "accounts": [
+      name: 'closeVault'
+      discriminator: [141, 103, 17, 126, 72, 75, 29, 29]
+      accounts: [
         {
-          "name": "vaultAccount",
-          "writable": true,
-          "relations": [
-            "plan"
-          ]
+          name: 'vaultAccount'
+          writable: true
+          relations: ['plan']
         },
         {
-          "name": "owner",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "vaultAccount"
-          ]
+          name: 'owner'
+          writable: true
+          signer: true
+          relations: ['vaultAccount']
         },
         {
-          "name": "plan",
-          "writable": true
+          name: 'plan'
+          writable: true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
+        },
+      ]
+      args: []
     },
     {
-      "name": "deposit",
-      "discriminator": [
-        242,
-        35,
-        198,
-        137,
-        82,
-        225,
-        242,
-        182
-      ],
-      "accounts": [
+      name: 'deposit'
+      discriminator: [242, 35, 198, 137, 82, 225, 242, 182]
+      accounts: [
         {
-          "name": "vaultAccount",
-          "writable": true
+          name: 'vaultAccount'
+          writable: true
         },
         {
-          "name": "owner",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "vaultAccount"
-          ]
+          name: 'owner'
+          writable: true
+          signer: true
+          relations: ['vaultAccount']
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
+        },
+      ]
+      args: [
         {
-          "name": "amount",
-          "type": "u64"
-        }
+          name: 'amount'
+          type: 'u64'
+        },
       ]
     },
     {
-      "name": "initializeVault",
-      "discriminator": [
-        48,
-        191,
-        163,
-        44,
-        71,
-        129,
-        63,
-        164
-      ],
-      "accounts": [
+      name: 'initializeVault'
+      discriminator: [48, 191, 163, 44, 71, 129, 63, 164]
+      accounts: [
         {
-          "name": "owner",
-          "writable": true,
-          "signer": true
+          name: 'owner'
+          writable: true
+          signer: true
         },
         {
-          "name": "vaultAccount",
-          "writable": true
+          name: 'vaultAccount'
+          writable: true
         },
         {
-          "name": "plan",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'plan'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  112,
-                  108,
-                  97,
-                  110
-                ]
+                kind: 'const'
+                value: [112, 108, 97, 110]
               },
               {
-                "kind": "account",
-                "path": "vaultAccount"
-              }
+                kind: 'account'
+                path: 'vaultAccount'
+              },
             ]
           }
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
+        },
+      ]
+      args: [
         {
-          "name": "planTitle",
-          "type": "string"
-        }
+          name: 'planTitle'
+          type: 'string'
+        },
       ]
     },
     {
-      "name": "submitPlan",
-      "discriminator": [
-        136,
-        185,
-        140,
-        2,
-        95,
-        178,
-        77,
-        2
-      ],
-      "accounts": [
+      name: 'submitPlan'
+      discriminator: [136, 185, 140, 2, 95, 178, 77, 2]
+      accounts: [
         {
-          "name": "vaultAccount",
-          "writable": true,
-          "relations": [
-            "plan"
-          ]
+          name: 'vaultAccount'
+          writable: true
+          relations: ['plan']
         },
         {
-          "name": "owner",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "vaultAccount"
-          ]
+          name: 'owner'
+          writable: true
+          signer: true
+          relations: ['vaultAccount']
         },
         {
-          "name": "plan",
-          "writable": true
+          name: 'plan'
+          writable: true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
+        },
+      ]
+      args: [
         {
-          "name": "args",
-          "type": {
-            "defined": {
-              "name": "planArgs"
+          name: 'args'
+          type: {
+            defined: {
+              name: 'planArgs'
             }
           }
-        }
+        },
       ]
     },
     {
-      "name": "withdraw",
-      "discriminator": [
-        183,
-        18,
-        70,
-        156,
-        148,
-        109,
-        161,
-        34
-      ],
-      "accounts": [
+      name: 'withdraw'
+      discriminator: [183, 18, 70, 156, 148, 109, 161, 34]
+      accounts: [
         {
-          "name": "vaultAccount",
-          "writable": true
+          name: 'vaultAccount'
+          writable: true
         },
         {
-          "name": "owner",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "vaultAccount"
-          ]
-        }
-      ],
-      "args": []
-    }
-  ],
-  "accounts": [
-    {
-      "name": "plan",
-      "discriminator": [
-        161,
-        231,
-        251,
-        119,
-        2,
-        12,
-        162,
-        2
+          name: 'owner'
+          writable: true
+          signer: true
+          relations: ['vaultAccount']
+        },
       ]
+      args: []
     },
-    {
-      "name": "vaultAccount",
-      "discriminator": [
-        230,
-        251,
-        241,
-        83,
-        139,
-        202,
-        93,
-        28
-      ]
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "vaultLocked",
-      "msg": "Vault is locked"
-    }
-  ],
-  "types": [
-    {
-      "name": "plan",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "vaultAccount",
-            "type": "pubkey"
-          },
-          {
-            "name": "planTitle",
-            "type": "string"
-          },
-          {
-            "name": "tradingPlatform",
-            "type": "string"
-          },
-          {
-            "name": "riskLevel",
-            "type": "string"
-          },
-          {
-            "name": "ticker",
-            "type": "string"
-          },
-          {
-            "name": "investmentAmount",
-            "type": "u64"
-          },
-          {
-            "name": "stopLoss",
-            "type": "f64"
-          },
-          {
-            "name": "takeProfit",
-            "type": "f64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "planArgs",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "tradingPlatform",
-            "type": "string"
-          },
-          {
-            "name": "riskLevel",
-            "type": "string"
-          },
-          {
-            "name": "ticker",
-            "type": "string"
-          },
-          {
-            "name": "investmentAmount",
-            "type": "u64"
-          },
-          {
-            "name": "stopLoss",
-            "type": "f64"
-          },
-          {
-            "name": "takeProfit",
-            "type": "f64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "vaultAccount",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "status",
-            "type": {
-              "defined": {
-                "name": "vaultStatus"
-              }
-            }
-          },
-          {
-            "name": "tokenVault",
-            "type": "pubkey"
-          },
-          {
-            "name": "planTitleHash",
-            "type": {
-              "array": [
-                "u8",
-                32
-              ]
-            }
-          },
-          {
-            "name": "planTitle",
-            "type": "string"
-          },
-          {
-            "name": "plan",
-            "type": {
-              "defined": {
-                "name": "plan"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "vaultStatus",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "locked"
-          },
-          {
-            "name": "unlocked"
-          }
-        ]
-      }
-    }
-  ],
-  "constants": [
-    {
-      "name": "vaultSeed",
-      "type": "string",
-      "value": "\"vault\""
-    }
   ]
-};
+  accounts: [
+    {
+      name: 'plan'
+      discriminator: [161, 231, 251, 119, 2, 12, 162, 2]
+    },
+    {
+      name: 'vaultAccount'
+      discriminator: [230, 251, 241, 83, 139, 202, 93, 28]
+    },
+  ]
+  errors: [
+    {
+      code: 6000
+      name: 'vaultLocked'
+      msg: 'Vault is locked'
+    },
+  ]
+  types: [
+    {
+      name: 'plan'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'vaultAccount'
+            type: 'pubkey'
+          },
+          {
+            name: 'planTitle'
+            type: 'string'
+          },
+          {
+            name: 'tradingPlatform'
+            type: 'string'
+          },
+          {
+            name: 'riskLevel'
+            type: 'string'
+          },
+          {
+            name: 'ticker'
+            type: 'string'
+          },
+          {
+            name: 'investmentAmount'
+            type: 'u64'
+          },
+          {
+            name: 'stopLoss'
+            type: 'f64'
+          },
+          {
+            name: 'takeProfit'
+            type: 'f64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'planArgs'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'tradingPlatform'
+            type: 'string'
+          },
+          {
+            name: 'riskLevel'
+            type: 'string'
+          },
+          {
+            name: 'ticker'
+            type: 'string'
+          },
+          {
+            name: 'investmentAmount'
+            type: 'u64'
+          },
+          {
+            name: 'stopLoss'
+            type: 'f64'
+          },
+          {
+            name: 'takeProfit'
+            type: 'f64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'vaultAccount'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'owner'
+            type: 'pubkey'
+          },
+          {
+            name: 'status'
+            type: {
+              defined: {
+                name: 'vaultStatus'
+              }
+            }
+          },
+          {
+            name: 'tokenVault'
+            type: 'pubkey'
+          },
+          {
+            name: 'planTitleHash'
+            type: {
+              array: ['u8', 32]
+            }
+          },
+          {
+            name: 'planTitle'
+            type: 'string'
+          },
+          {
+            name: 'plan'
+            type: {
+              defined: {
+                name: 'plan'
+              }
+            }
+          },
+        ]
+      }
+    },
+    {
+      name: 'vaultStatus'
+      type: {
+        kind: 'enum'
+        variants: [
+          {
+            name: 'locked'
+          },
+          {
+            name: 'unlocked'
+          },
+        ]
+      }
+    },
+  ]
+  constants: [
+    {
+      name: 'vaultSeed'
+      type: 'string'
+      value: '"vault"'
+    },
+  ]
+}

@@ -9,31 +9,18 @@
   "instructions": [
     {
       "name": "close_vault",
-      "discriminator": [
-        141,
-        103,
-        17,
-        126,
-        72,
-        75,
-        29,
-        29
-      ],
+      "discriminator": [141, 103, 17, 126, 72, 75, 29, 29],
       "accounts": [
         {
           "name": "vault_account",
           "writable": true,
-          "relations": [
-            "plan"
-          ]
+          "relations": ["plan"]
         },
         {
           "name": "owner",
           "writable": true,
           "signer": true,
-          "relations": [
-            "vault_account"
-          ]
+          "relations": ["vault_account"]
         },
         {
           "name": "plan",
@@ -48,16 +35,7 @@
     },
     {
       "name": "deposit",
-      "discriminator": [
-        242,
-        35,
-        198,
-        137,
-        82,
-        225,
-        242,
-        182
-      ],
+      "discriminator": [242, 35, 198, 137, 82, 225, 242, 182],
       "accounts": [
         {
           "name": "vault_account",
@@ -67,9 +45,7 @@
           "name": "owner",
           "writable": true,
           "signer": true,
-          "relations": [
-            "vault_account"
-          ]
+          "relations": ["vault_account"]
         },
         {
           "name": "system_program",
@@ -85,16 +61,7 @@
     },
     {
       "name": "initialize_vault",
-      "discriminator": [
-        48,
-        191,
-        163,
-        44,
-        71,
-        129,
-        63,
-        164
-      ],
+      "discriminator": [48, 191, 163, 44, 71, 129, 63, 164],
       "accounts": [
         {
           "name": "owner",
@@ -112,12 +79,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  112,
-                  108,
-                  97,
-                  110
-                ]
+                "value": [112, 108, 97, 110]
               },
               {
                 "kind": "account",
@@ -140,31 +102,18 @@
     },
     {
       "name": "submit_plan",
-      "discriminator": [
-        136,
-        185,
-        140,
-        2,
-        95,
-        178,
-        77,
-        2
-      ],
+      "discriminator": [136, 185, 140, 2, 95, 178, 77, 2],
       "accounts": [
         {
           "name": "vault_account",
           "writable": true,
-          "relations": [
-            "plan"
-          ]
+          "relations": ["plan"]
         },
         {
           "name": "owner",
           "writable": true,
           "signer": true,
-          "relations": [
-            "vault_account"
-          ]
+          "relations": ["vault_account"]
         },
         {
           "name": "plan",
@@ -188,16 +137,7 @@
     },
     {
       "name": "withdraw",
-      "discriminator": [
-        183,
-        18,
-        70,
-        156,
-        148,
-        109,
-        161,
-        34
-      ],
+      "discriminator": [183, 18, 70, 156, 148, 109, 161, 34],
       "accounts": [
         {
           "name": "vault_account",
@@ -207,9 +147,7 @@
           "name": "owner",
           "writable": true,
           "signer": true,
-          "relations": [
-            "vault_account"
-          ]
+          "relations": ["vault_account"]
         }
       ],
       "args": []
@@ -218,29 +156,11 @@
   "accounts": [
     {
       "name": "Plan",
-      "discriminator": [
-        161,
-        231,
-        251,
-        119,
-        2,
-        12,
-        162,
-        2
-      ]
+      "discriminator": [161, 231, 251, 119, 2, 12, 162, 2]
     },
     {
       "name": "VaultAccount",
-      "discriminator": [
-        230,
-        251,
-        241,
-        83,
-        139,
-        202,
-        93,
-        28
-      ]
+      "discriminator": [230, 251, 241, 83, 139, 202, 93, 28]
     }
   ],
   "errors": [
@@ -347,10 +267,7 @@
           {
             "name": "plan_title_hash",
             "type": {
-              "array": [
-                "u8",
-                32
-              ]
+              "array": ["u8", 32]
             }
           },
           {
