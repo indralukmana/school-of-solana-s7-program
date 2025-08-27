@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 use crate::{
     error::SubmitPlanErrors,
     state::{Plan, VaultAccount, VaultStatus},
-    PLAN_SEED,
 };
 
 #[derive(Accounts)]
@@ -14,12 +13,7 @@ pub struct SubmitPlan<'info> {
     #[account(mut, signer)]
     pub owner: Signer<'info>, // The user's wallet, need to sign
 
-    #[account(init,
-    payer = owner,
-    space = 8 + Plan::INIT_SPACE,
-    seeds = [PLAN_SEED.as_bytes(), vault_account.key().as_ref()],
-    bump
-    )]
+    #[account(mut, has_one = vault_account)]
     pub plan: Account<'info, Plan>,
 
     pub system_program: Program<'info, System>,

@@ -1,4 +1,7 @@
-use crate::state::VaultStatus;
+use crate::{
+    state::{Plan, VaultStatus},
+    PLAN_SEED,
+};
 use anchor_lang::prelude::*;
 use sha2::{Digest, Sha256};
 
@@ -19,6 +22,15 @@ pub struct InitializeVault<'info> {
     )]
     pub vault_account: Account<'info, VaultAccount>,
 
+    #[account(
+        init,
+        payer = owner,
+        space = 8 + Plan::INIT_SPACE,
+        seeds = [PLAN_SEED.as_bytes(), vault_account.key().as_ref()],
+        bump
+    )]
+    pub plan: Account<'info, Plan>,
+
     pub system_program: Program<'info, System>,
 }
 
@@ -34,6 +46,9 @@ pub fn initialize_handler(ctx: Context<InitializeVault>, plan_title: String) -> 
     vault
         .plan_title_hash
         .copy_from_slice(&Sha256::digest(plan_title.as_bytes())[..]);
+
+    let plan = &mut ctx.accounts.plan;
+    plan.vault_account = vault.key();
 
     Ok(())
 }

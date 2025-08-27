@@ -3,6 +3,7 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct Plan {
+    pub vault_account: Pubkey,
     #[max_len(100)]
     pub plan_title: String,
     #[max_len(100)]

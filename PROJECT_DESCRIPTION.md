@@ -52,12 +52,14 @@ and plan.
 
 **Instructions Implemented:**
 
-- `initialize_vault`: Creates a new vault account for a user, identified by a
-  plan title.
+- `initialize_vault`: Creates a new vault account and an associated empty plan
+  account for a user, identified by a plan title.
 - `deposit`: Allows the user to deposit SOL into their vault.
-- `submit_plan`: Allows the user to submit a trading plan, which unlocks the
+- `submit_plan`: Populates the details for the trading plan and unlocks the
   vault for withdrawal.
 - `withdraw`: Allows the user to withdraw the unlocked funds from the vault.
+- `close_vault`: Closes the vault and its associated plan account, returning
+  any rent-exempt lamports to the owner.
 
 ### Account Structure
 
@@ -74,6 +76,7 @@ pub struct VaultAccount {
 
 #[account]
 pub struct Plan {
+    pub vault_account: Pubkey,
     pub plan_title: String,
     pub trading_platform: String,
     pub risk_level: String,
@@ -93,9 +96,9 @@ The tests cover all the instructions and their various scenarios.
 **Happy Path Tests:**
 
 - **Initialize Vault**
-  - Successfully creates a new vault account, setting the correct owner,
-    `plan_title`, `plan_title_hash`, and an initial `Locked` status. The
-    embedded `plan` details are set to their default (empty) values.
+  - Successfully creates both a new vault account and an associated empty plan
+    account. Sets the correct owner, `plan_title`, `plan_title_hash`, and an
+    initial `Locked` status on the vault.
   - Successfully initializes with titles of various valid lengths (from 3 to 200
     characters).
 - **Deposit**
@@ -104,13 +107,16 @@ The tests cover all the instructions and their various scenarios.
 - **Submit Plan**
   - A user can submit a valid plan to a vault with a positive SOL balance (above
     rent).
-  - Successfully stores the plan's data in the new `plan` account.
+  - Successfully stores the plan's data in the existing `plan` account.
   - The vault's status correctly changes from `Locked` to `Unlocked`.
 - **Withdraw**
   - The owner can successfully withdraw the available SOL from an unlocked
     vault.
   - The vault's balance is reduced to the rent-exempt minimum, and the owner's
     wallet balance increases by the withdrawn amount.
+- **Close Vault**
+  - The owner can successfully close the vault and plan account (both before
+    and after submitting plan details).
 
 **Unhappy Path Tests:**
 
@@ -131,6 +137,9 @@ The tests cover all the instructions and their various scenarios.
 - **Withdraw**
   - Fails if the vault is still in a `Locked` state (plan not submitted).
   - Fails if a non-owner tries to withdraw funds.
+- **Close Vault**
+  - Fails if a non-owner tries to close the vault.
+  - Fails if the provided plan account does not belong to the vault account.
 
 ### Running Tests
 

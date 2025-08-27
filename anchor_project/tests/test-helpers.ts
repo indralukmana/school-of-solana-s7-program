@@ -7,8 +7,7 @@ import {
 	BN,
 } from '@coral-xyz/anchor';
 import { PlanVault } from '../target/types/plan_vault';
-import { ONE_SOL } from '../scripts/utils';
-import { getInitializeVaultTx } from '../scripts/methods';
+import { getInitializeVaultTx, ONE_SOL } from '../scripts/plan-vault-methods';
 
 export const txSendAndConfirm = async (
 	program: Program<PlanVault>,
@@ -73,7 +72,7 @@ export const createAndInitializeVault = async ({
 	ownerKeypair: web3.Keypair;
 	planTitle: string;
 }) => {
-	const { tx, vaultPda, hashedTitle } = await getInitializeVaultTx({
+	const { tx, vaultPda, planPda, hashedTitle } = await getInitializeVaultTx({
 		program,
 		ownerPublicKey: ownerKeypair.publicKey,
 		planTitle,
@@ -81,5 +80,5 @@ export const createAndInitializeVault = async ({
 
 	await txSendAndConfirm(program, tx, [ownerKeypair]);
 
-	return { vaultPda, hashedTitle };
+	return { vaultPda, planPda, hashedTitle };
 };

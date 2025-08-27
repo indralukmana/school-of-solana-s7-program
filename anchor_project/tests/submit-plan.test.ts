@@ -7,7 +7,7 @@ import {
 } from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
-import { getDepositTx, getSubmitPlanTx } from '../scripts/methods';
+import { getDepositTx, getSubmitPlanTx } from '../scripts/plan-vault-methods';
 
 describe('submit-plan', () => {
 	let program: Program<PlanVault>;
@@ -95,8 +95,6 @@ describe('submit-plan', () => {
 			txSendAndConfirm(program, tx, [anotherUser]),
 		).rejects.toThrow();
 	});
-
-	
 
 	it('Should fail with long ticker', async () => {
 		const planTitle = 'long-ticker-submit';

@@ -29,6 +29,10 @@ pub mod plan_vault {
         submit_plan_handler(ctx, args)
     }
 
+    pub fn close_vault(ctx: Context<CloseVault>) -> Result<()> {
+        close_vault_handler(ctx)
+    }
+
     pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
         withdraw_handler(ctx)
     }

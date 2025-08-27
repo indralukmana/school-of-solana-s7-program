@@ -1,8 +1,12 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
-import { getProgram, createAndInitializeVault, txSendAndConfirm } from './test-helpers';
+import {
+	getProgram,
+	createAndInitializeVault,
+	txSendAndConfirm,
+} from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
-import { getDepositTx } from '../scripts/methods';
+import { getDepositTx } from '../scripts/plan-vault-methods';
 
 describe('vault-deposit', () => {
 	let program: Program<PlanVault>;
@@ -62,7 +66,9 @@ describe('vault-deposit', () => {
 			amount: depositAmount,
 		});
 
-		await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow();
+		await expect(
+			txSendAndConfirm(program, tx, [ownerKeypair]),
+		).rejects.toThrow();
 	});
 
 	it('Cannot deposit with insufficient funds', async () => {
@@ -85,7 +91,9 @@ describe('vault-deposit', () => {
 			amount: depositAmount,
 		});
 
-		await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow();
+		await expect(
+			txSendAndConfirm(program, tx, [ownerKeypair]),
+		).rejects.toThrow();
 	});
 
 	it('Another user cannot deposit into the vault', async () => {
@@ -106,6 +114,8 @@ describe('vault-deposit', () => {
 			amount: depositAmount,
 		});
 
-		await expect(txSendAndConfirm(program, tx, [anotherUser])).rejects.toThrow();
+		await expect(
+			txSendAndConfirm(program, tx, [anotherUser]),
+		).rejects.toThrow();
 	});
 });

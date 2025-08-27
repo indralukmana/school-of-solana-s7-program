@@ -19,7 +19,7 @@ describe('vault-initialize', () => {
 	});
 
 	it('Can be initialized successfully!', async () => {
-		const { vaultPda, hashedTitle } = await createAndInitializeVault({
+		const { vaultPda, planPda, hashedTitle } = await createAndInitializeVault({
 			program,
 			ownerKeypair,
 			planTitle,
@@ -32,13 +32,16 @@ describe('vault-initialize', () => {
 		expect(storedVault.status).toEqual({ locked: {} });
 		expect(storedVault.tokenVault).toEqual(web3.PublicKey.default);
 		expect(storedVault.planTitle).toEqual(planTitle);
-		expect(storedVault.plan.planTitle).toEqual('');
-		expect(storedVault.plan.tradingPlatform).toEqual('');
-		expect(storedVault.plan.riskLevel).toEqual('');
-		expect(storedVault.plan.ticker).toEqual('');
-		expect(storedVault.plan.investmentAmount.toNumber()).toEqual(0);
-		expect(storedVault.plan.stopLoss).toEqual(0);
-		expect(storedVault.plan.takeProfit).toEqual(0);
+		
+		const storedPlan = await program.account.plan.fetch(planPda);
+		expect(storedPlan.vaultAccount).toEqual(vaultPda);
+		expect(storedPlan.planTitle).toEqual('');
+		expect(storedPlan.tradingPlatform).toEqual('');
+		expect(storedPlan.riskLevel).toEqual('');
+		expect(storedPlan.ticker).toEqual('');
+		expect(storedPlan.investmentAmount.toNumber()).toEqual(0);
+		expect(storedPlan.stopLoss).toEqual(0);
+		expect(storedPlan.takeProfit).toEqual(0);
 	});
 
 	it('Can be initialized with a long title', async () => {

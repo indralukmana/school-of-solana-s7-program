@@ -11,7 +11,7 @@ import {
 	getDepositTx,
 	getSubmitPlanTx,
 	getWithdrawTx,
-} from '../scripts/methods';
+} from '../scripts/plan-vault-methods';
 
 describe('withdraw', () => {
 	let program: Program<PlanVault>;
