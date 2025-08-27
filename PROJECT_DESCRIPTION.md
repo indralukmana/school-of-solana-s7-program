@@ -2,7 +2,7 @@
 
 **Deployed Frontend URL:** [TODO: Link to your deployed frontend]
 
-**Solana Program ID:** AMUvCRdBydMJ5jpYcBFFtFuwEpFCLFrbk5qByhmnzjy8
+**Solana Program ID:** 3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ
 
 ## Project Overview
 
@@ -68,6 +68,7 @@ pub struct VaultAccount {
     pub status: VaultStatus,
     pub token_vault: Pubkey,
     pub plan_title_hash: [u8; 32],
+    pub plan_title: String,
     pub plan: Plan,
 }
 
@@ -93,7 +94,8 @@ The tests cover all the instructions and their various scenarios.
 
 - **Initialize Vault**
   - Successfully creates a new vault account, setting the correct owner,
-    `plan_title_hash`, and an initial `Locked` status.
+    `plan_title`, `plan_title_hash`, and an initial `Locked` status. The
+    embedded `plan` details are set to their default (empty) values.
   - Successfully initializes with titles of various valid lengths (from 3 to 200
     characters).
 - **Deposit**
@@ -124,7 +126,7 @@ The tests cover all the instructions and their various scenarios.
 - **Submit Plan**
   - Fails if the vault has insufficient funds (i.e., only rent-exempt balance).
   - Fails if a non-owner tries to submit a plan.
-  - Fails if the `plan_title` or `ticker` in the arguments exceed their maximum
+  - Fails if the `trading_platform`, `risk_level`, or `ticker` in the arguments exceed their maximum
     allowed length.
 - **Withdraw**
   - Fails if the vault is still in a `Locked` state (plan not submitted).
