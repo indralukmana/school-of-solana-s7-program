@@ -252,13 +252,8 @@ export type PlanVault = {
   "errors": [
     {
       "code": 6000,
-      "name": "insufficientVaultFunds",
-      "msg": "Vault funds must be greater than 0"
-    },
-    {
-      "code": 6001,
-      "name": "tooLong",
-      "msg": "Input string exceeds max length"
+      "name": "vaultLocked",
+      "msg": "Vault is locked"
     }
   ],
   "types": [

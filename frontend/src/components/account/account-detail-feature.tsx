@@ -60,11 +60,13 @@ export default function AccountDetailFeature() {
           <p>Balance: {vaultBalance.toFixed(4)} SOL</p>
         </div>
 
-        {!isUnlocked && <DepositForm vaultAddress={vaultAddress} />}
+        {!isUnlocked && vaultBalance === 0 && <DepositForm vaultAddress={vaultAddress} />}
 
-        {!isUnlocked && !getPlan.data && vaultBalance > 0 && <PlanForm vaultAddress={vaultAddress} planPda={planPda} />}
+        {!isUnlocked && !getPlan.data?.planTitle && vaultBalance > 0 && (
+          <PlanForm vaultAddress={vaultAddress} planPda={planPda} />
+        )}
 
-        {getPlan.data && <SubmittedPlan plan={getPlan.data} />}
+        {isUnlocked && <SubmittedPlan plan={getPlan.data} />}
 
         {isUnlocked && getPlan.data && vaultBalance > 0 && <WithdrawButton vaultAddress={vaultAddress} />}
 
