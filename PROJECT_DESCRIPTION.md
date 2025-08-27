@@ -2,7 +2,7 @@
 
 **Deployed Frontend URL:** [TODO: Link to your deployed frontend]
 
-**Solana Program ID:** 3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ
+**Solana Program ID:** 2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH
 
 ## Project Overview
 
@@ -58,8 +58,8 @@ and plan.
 - `submit_plan`: Populates the details for the trading plan and unlocks the
   vault for withdrawal.
 - `withdraw`: Allows the user to withdraw the unlocked funds from the vault.
-- `close_vault`: Closes the vault and its associated plan account, returning
-  any rent-exempt lamports to the owner.
+- `close_vault`: Closes the vault and its associated plan account, returning any
+  rent-exempt lamports to the owner.
 
 ### Account Structure
 
@@ -115,8 +115,8 @@ The tests cover all the instructions and their various scenarios.
   - The vault's balance is reduced to the rent-exempt minimum, and the owner's
     wallet balance increases by the withdrawn amount.
 - **Close Vault**
-  - The owner can successfully close the vault and plan account (both before
-    and after submitting plan details).
+  - The owner can successfully close the vault and plan account (both before and
+    after submitting plan details).
 
 **Unhappy Path Tests:**
 
@@ -132,8 +132,8 @@ The tests cover all the instructions and their various scenarios.
 - **Submit Plan**
   - Fails if the vault has insufficient funds (i.e., only rent-exempt balance).
   - Fails if a non-owner tries to submit a plan.
-  - Fails if the `trading_platform`, `risk_level`, or `ticker` in the arguments exceed their maximum
-    allowed length.
+  - Fails if the `trading_platform`, `risk_level`, or `ticker` in the arguments
+    exceed their maximum allowed length.
 - **Withdraw**
   - Fails if the vault is still in a `Locked` state (plan not submitted).
   - Fails if a non-owner tries to withdraw funds.

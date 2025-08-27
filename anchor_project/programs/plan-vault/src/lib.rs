@@ -11,7 +11,7 @@ use anchor_lang::prelude::*;
 pub use constants::*;
 pub use handlers::*;
 
-declare_id!("3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ");
+declare_id!("2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH");
 
 #[program]
 pub mod plan_vault {

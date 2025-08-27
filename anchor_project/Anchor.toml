@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-plan_vault = "3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ"
+plan_vault = "2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH"
 
 [programs.devnet]
-plan_vault = "3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ"
+plan_vault = "2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH"
 
 [registry]
 url = "https://api.apr.dev"
