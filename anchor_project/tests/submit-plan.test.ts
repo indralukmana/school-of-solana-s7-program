@@ -49,7 +49,7 @@ describe('submit-plan', () => {
 		expect(storedVault.status).toEqual({ unlocked: {} });
 
 		const storedPlan = await program.account.plan.fetch(planPda);
-		expect(storedPlan.planTitle).toEqual(args.planTitle);
+		expect(storedPlan.planTitle).toEqual('');
 		expect(storedPlan.ticker).toEqual(args.ticker);
 	});
 
@@ -96,35 +96,7 @@ describe('submit-plan', () => {
 		).rejects.toThrow();
 	});
 
-	it('Should fail with long plan title', async () => {
-		const planTitle = 'long-title-submit';
-		const { vaultPda } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
-
-		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
-		const { tx: depositTx } = await getDepositTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			amount: depositAmount,
-		});
-		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
-
-		const args = { ...getDefaultPlanArgs(), planTitle: 'a'.repeat(101) };
-
-		const { tx: submitTx } = await getSubmitPlanTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			args,
-		});
-		await expect(
-			txSendAndConfirm(program, submitTx, [ownerKeypair]),
-		).rejects.toThrow();
-	});
+	
 
 	it('Should fail with long ticker', async () => {
 		const planTitle = 'long-ticker-submit';

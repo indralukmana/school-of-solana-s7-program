@@ -31,6 +31,14 @@ describe('vault-initialize', () => {
 		expect(storedVault.owner).toEqual(ownerKeypair.publicKey);
 		expect(storedVault.status).toEqual({ locked: {} });
 		expect(storedVault.tokenVault).toEqual(web3.PublicKey.default);
+		expect(storedVault.planTitle).toEqual(planTitle);
+		expect(storedVault.plan.planTitle).toEqual('');
+		expect(storedVault.plan.tradingPlatform).toEqual('');
+		expect(storedVault.plan.riskLevel).toEqual('');
+		expect(storedVault.plan.ticker).toEqual('');
+		expect(storedVault.plan.investmentAmount.toNumber()).toEqual(0);
+		expect(storedVault.plan.stopLoss).toEqual(0);
+		expect(storedVault.plan.takeProfit).toEqual(0);
 	});
 
 	it('Can be initialized with a long title', async () => {
@@ -46,7 +54,7 @@ describe('vault-initialize', () => {
 		expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
 	});
 
-	it('Can be initialized with a short title', async () => {
+	it('Can be initialized with a short three letter title', async () => {
 		const shortTitle = 'aaa';
 		const { vaultPda, hashedTitle } = await createAndInitializeVault({
 			program,
@@ -61,6 +69,17 @@ describe('vault-initialize', () => {
 
 	it('Cannot be initialized with empty title', async () => {
 		const shortTitle = '';
+		await expect(
+			createAndInitializeVault({
+				program,
+				ownerKeypair,
+				planTitle: shortTitle,
+			}),
+		).rejects.toThrow();
+	});
+
+	it('Cannot be initialized with single letter title', async () => {
+		const shortTitle = 'a';
 		await expect(
 			createAndInitializeVault({
 				program,

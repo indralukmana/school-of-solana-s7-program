@@ -6,7 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-plan_vault = "AMUvCRdBydMJ5jpYcBFFtFuwEpFCLFrbk5qByhmnzjy8"
+plan_vault = "3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ"
+
+[programs.devnet]
+plan_vault = "3TePuiM6kKgQeUb6YGbybDN1WN22x5Yi15xxoGavn5gQ"
 
 [registry]
 url = "https://api.apr.dev"
@@ -16,4 +19,4 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "pnpm exec vitest"
+test = "pnpm exec vitest --reporter verbose"

@@ -41,6 +41,7 @@ describe('vault-deposit', () => {
 		expect(storedVaultAfter.planTitleHash).toEqual(Array.from(hashedTitle));
 		expect(storedVaultAfter.owner).toEqual(ownerKeypair.publicKey);
 		expect(storedVaultAfter.status).toEqual({ locked: {} });
+		expect(storedVaultAfter.planTitle).toEqual(planTitle);
 		expect(vaultBalance).toEqual(vaultInitialBalance + Number(depositAmount));
 	});
 

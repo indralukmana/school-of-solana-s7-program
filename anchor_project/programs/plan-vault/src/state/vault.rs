@@ -10,5 +10,7 @@ pub struct VaultAccount {
     pub status: VaultStatus,
     pub token_vault: Pubkey,
     pub plan_title_hash: [u8; 32],
+    #[max_len(200)]
+    pub plan_title: String,
     pub plan: Plan,
 }

@@ -31,6 +31,7 @@ pub fn initialize_handler(ctx: Context<InitializeVault>, plan_title: String) -> 
     vault.owner = *ctx.accounts.owner.key;
     vault.status = VaultStatus::Locked; // initial locked
     vault.token_vault = Pubkey::default();
+    vault.plan_title = plan_title.clone();
     vault
         .plan_title_hash
         .copy_from_slice(&Sha256::digest(plan_title.as_bytes())[..]);

@@ -27,7 +27,6 @@ export const getVaultDefaultValues = () => {
 
 export const getDefaultPlanArgs = () => {
 	return {
-		planTitle: 'My Test Plan',
 		tradingPlatform: 'Jupiter',
 		riskLevel: 'High',
 		ticker: 'SOL',

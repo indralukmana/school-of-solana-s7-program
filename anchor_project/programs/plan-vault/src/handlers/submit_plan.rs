@@ -28,7 +28,6 @@ pub struct SubmitPlan<'info> {
 // Named-parameters for creating a Plan
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct PlanArgs {
-    pub plan_title: String,
     pub trading_platform: String,
     pub risk_level: String,
     pub ticker: String,
@@ -57,7 +56,6 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<(
 
     let plan = &mut ctx.accounts.plan;
 
-    require!(args.plan_title.len() <= 100, SubmitPlanErrors::TooLong);
     require!(
         args.trading_platform.len() <= 100,
         SubmitPlanErrors::TooLong
@@ -65,7 +63,6 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<(
     require!(args.risk_level.len() <= 100, SubmitPlanErrors::TooLong);
     require!(args.ticker.len() <= 10, SubmitPlanErrors::TooLong);
 
-    plan.plan_title = args.plan_title;
     plan.trading_platform = args.trading_platform;
     plan.risk_level = args.risk_level;
     plan.ticker = args.ticker;

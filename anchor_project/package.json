@@ -1,7 +1,7 @@
 {
 	"license": "ISC",
 	"scripts": {
-		"build": "anchor build && cp target/idl/*.json anchor-dist/idl && cp target/types/*.ts anchor-dist/types ",
+		"build": "anchor build && cp target/idl/*.json ../frontend/src/lib/anchor-dist/idl && cp target/types/*.ts ../frontend/src/lib/anchor-dist/types  ",
 		"test": "anchor test"
 	},
 	"dependencies": {
