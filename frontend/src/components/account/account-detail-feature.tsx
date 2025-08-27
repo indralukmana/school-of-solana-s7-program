@@ -5,7 +5,7 @@ import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { AppHero } from '@/components/app-hero'
 import { Button } from '@/components/ui/button'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useGetVault } from '@/hooks/use-get-vault'
 import { useGetPlan } from '@/hooks/use-get-plan'
 import { useCloseVault } from '@/hooks/use-close-vault'
@@ -19,7 +19,7 @@ import { WithdrawButton } from './account-detail/withdraw-button'
 export default function AccountDetailFeature() {
   const { address } = useParams()
   const router = useRouter()
-  const vaultAddress = new PublicKey(address as string)
+  const vaultAddress = useMemo(() => new PublicKey(address as string), [address])
   const { connection } = useConnection()
 
   const [planPda, setPlanPda] = useState<PublicKey | null>(null)
