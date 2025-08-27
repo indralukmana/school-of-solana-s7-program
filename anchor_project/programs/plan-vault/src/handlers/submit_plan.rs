@@ -63,6 +63,7 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<(
     plan.investment_amount = args.investment_amount;
     plan.stop_loss = args.stop_loss;
     plan.take_profit = args.take_profit;
+    plan.plan_title = vault.plan_title.clone();
 
     Ok(())
 }

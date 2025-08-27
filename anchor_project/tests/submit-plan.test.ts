@@ -49,8 +49,15 @@ describe('submit-plan', () => {
 		expect(storedVault.status).toEqual({ unlocked: {} });
 
 		const storedPlan = await program.account.plan.fetch(planPda);
-		expect(storedPlan.planTitle).toEqual('');
+		expect(storedPlan.planTitle).toEqual(planTitle);
 		expect(storedPlan.ticker).toEqual(args.ticker);
+		expect(storedPlan.investmentAmount.toNumber()).toEqual(
+			args.investmentAmount.toNumber(),
+		);
+		expect(storedPlan.stopLoss).toEqual(args.stopLoss);
+		expect(storedPlan.takeProfit).toEqual(args.takeProfit);
+		expect(storedPlan.tradingPlatform).toEqual(args.tradingPlatform);
+		expect(storedPlan.riskLevel).toEqual(args.riskLevel);
 	});
 
 	it('Should fail to submit a plan with insufficient funds', async () => {
