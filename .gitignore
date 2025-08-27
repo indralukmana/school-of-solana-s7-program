@@ -3,3 +3,7 @@ anchor_project/target
 **/*.rs.bk
 **/node_modules
 **/test-ledger
+
+frontend/.next
+frontend/.vercel
+frontend/next-env.d.ts
