@@ -1,23 +1,26 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { useConnection } from '@solana/wallet-adapter-react'
 import { AppHero } from '@/components/app-hero'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useState, useEffect } from 'react'
 import { useGetVault } from '@/hooks/use-get-vault'
 import { useGetPlan } from '@/hooks/use-get-plan'
-import { useDeposit } from '@/hooks/use-deposit'
-import { useSubmitPlan } from '@/hooks/use-submit-plan'
-import { useWithdraw } from '@/hooks/use-withdraw'
 import { useCloseVault } from '@/hooks/use-close-vault'
+import { useAccountLamportsQuery } from '@/hooks/use-account-lamports'
 import { getPlanPda } from '@/lib/plan-vault-utils'
+import { DepositForm } from './account-detail/deposit-form'
+import { PlanForm } from './account-detail/plan-form'
+import { SubmittedPlan } from './account-detail/submitted-plan'
+import { WithdrawButton } from './account-detail/withdraw-button'
 
 export default function AccountDetailFeature() {
   const { address } = useParams()
   const router = useRouter()
   const vaultAddress = new PublicKey(address as string)
+  const { connection } = useConnection()
 
   const [planPda, setPlanPda] = useState<PublicKey | null>(null)
 
@@ -27,25 +30,8 @@ export default function AccountDetailFeature() {
 
   const getVault = useGetVault(vaultAddress)
   const getPlan = useGetPlan(planPda)
-  const deposit = useDeposit(vaultAddress)
-  const submitPlan = useSubmitPlan(vaultAddress, planPda)
-  const withdraw = useWithdraw(vaultAddress)
   const closeVault = useCloseVault(vaultAddress, planPda)
-
-  const [depositAmount, setDepositAmount] = useState(0)
-  const [planDetails, setPlanDetails] = useState({
-    tradingPlatform: '',
-    riskLevel: '',
-    ticker: '',
-    investmentAmount: 0,
-    stopLoss: 0,
-    takeProfit: 0,
-  })
-
-  const handlePlanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target
-    setPlanDetails((prev) => ({ ...prev, [name]: type === 'number' ? parseFloat(value) || 0 : value }))
-  }
+  const lamportsQuery = useAccountLamportsQuery(connection, vaultAddress)
 
   if (getVault.isLoading) return <div className="text-center">Loading...</div>
   if (getVault.isError || !getVault.data) {
@@ -60,6 +46,7 @@ export default function AccountDetailFeature() {
 
   const vault = getVault.data
   const isUnlocked = Object.keys(vault.status)[0] === 'Unlocked'
+  const vaultBalance = (lamportsQuery.data?.excessLamports ?? 0) / LAMPORTS_PER_SOL
 
   return (
     <div>
@@ -70,67 +57,16 @@ export default function AccountDetailFeature() {
           <p>Title: {vault.planTitle}</p>
           <p>Owner: {vault.owner.toBase58()}</p>
           <p>Status: {isUnlocked ? 'Unlocked' : 'Locked'}</p>
+          <p>Balance: {vaultBalance.toFixed(4)} SOL</p>
         </div>
 
-        {!isUnlocked && (
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-xl font-bold">Deposit SOL</h3>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="number"
-                  placeholder="Amount in SOL"
-                  value={depositAmount}
-                  onChange={(e) => setDepositAmount(parseFloat(e.target.value) || 0)}
-                />
-                <Button onClick={() => deposit.mutate(depositAmount)} disabled={deposit.isPending}>
-                  {deposit.isPending ? 'Depositing...' : 'Deposit'}
-                </Button>
-              </div>
-            </div>
+        {!isUnlocked && <DepositForm vaultAddress={vaultAddress} />}
 
-            <div>
-              <h3 className="text-xl font-bold">Submit Trading Plan</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <Input name="tradingPlatform" placeholder="Trading Platform" onChange={handlePlanChange} />
-                <Input name="riskLevel" placeholder="Risk Level" onChange={handlePlanChange} />
-                <Input name="ticker" placeholder="Ticker" onChange={handlePlanChange} />
-                <Input
-                  name="investmentAmount"
-                  type="number"
-                  placeholder="Investment Amount (SOL)"
-                  onChange={handlePlanChange}
-                />
-                <Input name="stopLoss" type="number" placeholder="Stop Loss" onChange={handlePlanChange} />
-                <Input name="takeProfit" type="number" placeholder="Take Profit" onChange={handlePlanChange} />
-              </div>
-              <Button onClick={() => submitPlan.mutate(planDetails)} disabled={submitPlan.isPending} className="mt-4">
-                {submitPlan.isPending ? 'Submitting...' : 'Submit Plan'}
-              </Button>
-            </div>
-          </div>
-        )}
+        {!isUnlocked && !getPlan.data && vaultBalance > 0 && <PlanForm vaultAddress={vaultAddress} planPda={planPda} />}
 
-        {isUnlocked && (
-          <div>
-            <h3 className="text-xl font-bold">Withdraw Funds</h3>
-            <Button onClick={() => withdraw.mutate()} disabled={withdraw.isPending}>
-              {withdraw.isPending ? 'Withdrawing...' : 'Withdraw'}
-            </Button>
-          </div>
-        )}
+        {getPlan.data && <SubmittedPlan plan={getPlan.data} />}
 
-        {getPlan.data && isUnlocked && (
-          <div>
-            <h3 className="text-xl font-bold">Submitted Plan Details</h3>
-            <p>Trading Platform: {getPlan.data.tradingPlatform}</p>
-            <p>Risk Level: {getPlan.data.riskLevel}</p>
-            <p>Ticker: {getPlan.data.ticker}</p>
-            <p>Investment Amount: {getPlan.data.investmentAmount.toString()} lamports</p>
-            <p>Stop Loss: {getPlan.data.stopLoss}</p>
-            <p>Take Profit: {getPlan.data.takeProfit}</p>
-          </div>
-        )}
+        {isUnlocked && getPlan.data && vaultBalance > 0 && <WithdrawButton vaultAddress={vaultAddress} />}
 
         <div className="space-y-2 pt-4 border-t">
           <h3 className="text-xl font-bold">Close Vault</h3>
@@ -138,7 +74,12 @@ export default function AccountDetailFeature() {
             This will close both the vault and the plan account, and return all rent-exempt SOL to your wallet. This
             action is irreversible.
           </p>
-          <Button variant="destructive" onClick={() => closeVault.mutate()} disabled={closeVault.isPending} className="mt-2">
+          <Button
+            variant="destructive"
+            onClick={() => closeVault.mutate()}
+            disabled={closeVault.isPending}
+            className="mt-2"
+          >
             {closeVault.isPending ? 'Closing...' : 'Close Vault'}
           </Button>
         </div>

@@ -1,11 +1,14 @@
 // Here we export some useful types and functions for interacting with the Anchor program.
-import { AnchorProvider, Program } from '@coral-xyz/anchor'
+import { AnchorProvider, Program, IdlAccounts } from '@coral-xyz/anchor'
 import { Cluster, PublicKey } from '@solana/web3.js'
 import PlanVaultIDL from './anchor-dist/idl/plan_vault.json'
 import type { PlanVault } from './anchor-dist/types/plan_vault'
 
 // Re-export the generated IDL and type
 export { PlanVault, PlanVaultIDL }
+
+// Derive the Plan type from the Anchor-generated types.
+export type Plan = IdlAccounts<PlanVault>['plan']
 
 // The programId is imported from the program IDL.
 export const PLAN_VAULT_PROGRAM_ID = new PublicKey(PlanVaultIDL.address)
