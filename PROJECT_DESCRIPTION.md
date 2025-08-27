@@ -1,6 +1,6 @@
 # Project Description
 
-**Deployed Frontend URL:** [TODO: Link to your deployed frontend]
+**Deployed Frontend URL:** <https://plan-vault-ackee-program-task.vercel.app>
 
 **Solana Program ID:** 2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH
 

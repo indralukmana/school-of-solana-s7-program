@@ -48,10 +48,11 @@ export const useAccountLamportsQuery = (
   opts?: UseAccountLamportsOptions,
 ) => {
   const queryClient = useQueryClient()
-  const key = useMemo(
-    () => ['solana', 'accountLamports', connection?.rpcEndpoint, pubkey?.toBase58()],
-    [connection?.rpcEndpoint, pubkey?.toBase58()],
-  )
+
+  const pubkeyBase58 = pubkey?.toBase58() ?? null
+  const rpcEndpoint = connection?.rpcEndpoint ?? null
+
+  const key = useMemo(() => ['solana', 'accountLamports', rpcEndpoint, pubkeyBase58], [rpcEndpoint, pubkeyBase58])
   const commitment = opts?.commitment ?? 'confirmed'
 
   const query = useQuery<AccountLamportsInfo>({

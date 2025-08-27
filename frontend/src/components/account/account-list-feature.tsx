@@ -51,7 +51,7 @@ export default function AccountListFeature() {
         <div className="text-center py-12">
           <h3 className="text-2xl font-semibold">No Vaults Found</h3>
           <p className="text-muted-foreground mt-2">
-            You haven't created any vaults yet. Use the form{' '}
+            You have not created any vaults yet. Use the form{' '}
             <Link href="/" className="underline font-bold">
               here
             </Link>{' '}
