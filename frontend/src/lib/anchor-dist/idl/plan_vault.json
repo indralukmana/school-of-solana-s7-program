@@ -1,0 +1,398 @@
+{
+  "address": "2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH",
+  "metadata": {
+    "name": "plan_vault",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "close_vault",
+      "discriminator": [
+        141,
+        103,
+        17,
+        126,
+        72,
+        75,
+        29,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "vault_account",
+          "writable": true,
+          "relations": [
+            "plan"
+          ]
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "vault_account"
+          ]
+        },
+        {
+          "name": "plan",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "discriminator": [
+        242,
+        35,
+        198,
+        137,
+        82,
+        225,
+        242,
+        182
+      ],
+      "accounts": [
+        {
+          "name": "vault_account",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "vault_account"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_vault",
+      "discriminator": [
+        48,
+        191,
+        163,
+        44,
+        71,
+        129,
+        63,
+        164
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault_account",
+          "writable": true
+        },
+        {
+          "name": "plan",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  97,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "plan_title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "submit_plan",
+      "discriminator": [
+        136,
+        185,
+        140,
+        2,
+        95,
+        178,
+        77,
+        2
+      ],
+      "accounts": [
+        {
+          "name": "vault_account",
+          "writable": true,
+          "relations": [
+            "plan"
+          ]
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "vault_account"
+          ]
+        },
+        {
+          "name": "plan",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "PlanArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "vault_account",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "vault_account"
+          ]
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Plan",
+      "discriminator": [
+        161,
+        231,
+        251,
+        119,
+        2,
+        12,
+        162,
+        2
+      ]
+    },
+    {
+      "name": "VaultAccount",
+      "discriminator": [
+        230,
+        251,
+        241,
+        83,
+        139,
+        202,
+        93,
+        28
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InsufficientVaultFunds",
+      "msg": "Vault funds must be greater than 0"
+    },
+    {
+      "code": 6001,
+      "name": "TooLong",
+      "msg": "Input string exceeds max length"
+    }
+  ],
+  "types": [
+    {
+      "name": "Plan",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "plan_title",
+            "type": "string"
+          },
+          {
+            "name": "trading_platform",
+            "type": "string"
+          },
+          {
+            "name": "risk_level",
+            "type": "string"
+          },
+          {
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "name": "investment_amount",
+            "type": "u64"
+          },
+          {
+            "name": "stop_loss",
+            "type": "f64"
+          },
+          {
+            "name": "take_profit",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlanArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trading_platform",
+            "type": "string"
+          },
+          {
+            "name": "risk_level",
+            "type": "string"
+          },
+          {
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "name": "investment_amount",
+            "type": "u64"
+          },
+          {
+            "name": "stop_loss",
+            "type": "f64"
+          },
+          {
+            "name": "take_profit",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "VaultStatus"
+              }
+            }
+          },
+          {
+            "name": "token_vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "plan_title_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "plan_title",
+            "type": "string"
+          },
+          {
+            "name": "plan",
+            "type": {
+              "defined": {
+                "name": "Plan"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Locked"
+          },
+          {
+            "name": "Unlocked"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "VAULT_SEED",
+      "type": "string",
+      "value": "\"vault\""
+    }
+  ]
+}
