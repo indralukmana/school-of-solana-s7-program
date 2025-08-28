@@ -1,24 +1,21 @@
 {
   "name": "plan-vault",
   "scripts": {
-    "anchor": "cd anchor && anchor",
-    "anchor-build": "cd anchor && anchor build",
-    "anchor-localnet": "cd anchor && anchor localnet",
-    "anchor-test": "cd anchor && anchor test",
     "build": "next build",
-    "ci": "npm run build && npm run lint && npm run format:check",
+    "ci": "pnpm build && pnpm lint && pnpm format:check",
     "dev": "next dev --turbopack",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "next lint",
     "start": "next start"
   },
-  "description": "Next.js, Tailwind, @solana/web3.js, Wallet Adapter, Anchor Counter program",
+  "description": "Plan Vault — Decentralized Trading Diary on Solana",
   "keywords": [
-    "anchor-counter",
+    "plan-vault",
+    "solana",
+    "anchor",
     "nextjs",
     "react",
-    "solana-web3js",
     "tailwind",
     "typescript",
     "wallet-adapter"
@@ -53,16 +50,13 @@
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/bn.js": "^5.2.0",
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "eslint": "^9.33.0",
     "eslint-config-next": "15.5.0",
-    "jest": "^30.0.5",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.12",
-    "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
   }
 }
