@@ -2,7 +2,7 @@
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
-import { RefreshCw } from 'lucide-react'
+import { Loader2, RefreshCw } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 
@@ -94,7 +94,7 @@ export function AccountTokens({ address }: { address: PublicKey }) {
           <h2 className="text-2xl font-bold">Token Accounts</h2>
           <div className="space-x-2">
             {query.isLoading ? (
-              <span className="loading loading-spinner"></span>
+              <Loader2 className="animate-spin" size={16} />
             ) : (
               <Button
                 variant="outline"
@@ -111,7 +111,7 @@ export function AccountTokens({ address }: { address: PublicKey }) {
           </div>
         </div>
       </div>
-      {query.isError && <pre className="alert alert-error">Error: {query.error?.message.toString()}</pre>}
+      {query.isError && <div className="rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">Error: {query.error?.message.toString()}</div>}
       {query.isSuccess && (
         <div>
           {query.data.length === 0 ? (
@@ -184,7 +184,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
         <h2 className="text-2xl font-bold">Transaction History</h2>
         <div className="space-x-2">
           {query.isLoading ? (
-            <span className="loading loading-spinner"></span>
+            <Loader2 className="animate-spin" size={16} />
           ) : (
             <Button variant="outline" onClick={() => query.refetch()}>
               <RefreshCw size={16} />
@@ -192,7 +192,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
           )}
         </div>
       </div>
-      {query.isError && <pre className="alert alert-error">Error: {query.error?.message.toString()}</pre>}
+      {query.isError && <div className="rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">Error: {query.error?.message.toString()}</div>}
       {query.isSuccess && (
         <div>
           {query.data.length === 0 ? (
