@@ -5,6 +5,7 @@ import { getPlanVaultProgram } from '@/lib/plan-vault-program'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
 import { BN } from '@coral-xyz/anchor'
+import { toast } from 'sonner'
 
 interface SubmitPlanArgs {
   tradingPlatform: string
@@ -45,7 +46,7 @@ export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | 
     },
     onError: (error: Error) => {
       console.error(error)
-      alert(`Error: ${error.message}`)
+      toast.error(error.message)
     },
   })
 }

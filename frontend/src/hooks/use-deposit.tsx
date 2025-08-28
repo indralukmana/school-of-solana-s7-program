@@ -5,6 +5,7 @@ import { getPlanVaultProgram } from '@/lib/plan-vault-program'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { BN } from '@coral-xyz/anchor'
+import { toast } from 'sonner'
 
 export function useDeposit(vaultAddress: PublicKey) {
   const { publicKey } = useWallet()
@@ -30,7 +31,7 @@ export function useDeposit(vaultAddress: PublicKey) {
     },
     onError: (error: Error) => {
       console.error(error)
-      alert(`Error: ${error.message}`)
+      toast.error(error.message)
     },
   })
 }

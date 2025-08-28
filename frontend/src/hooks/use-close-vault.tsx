@@ -5,6 +5,7 @@ import { getPlanVaultProgram } from '@/lib/plan-vault-program'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { PublicKey } from '@solana/web3.js'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | null) {
   const { publicKey } = useWallet()
@@ -36,7 +37,7 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
     },
     onError: (error: Error) => {
       console.error(error)
-      alert(`Error: ${error.message}`)
+      toast.error(error.message)
     },
   })
 }

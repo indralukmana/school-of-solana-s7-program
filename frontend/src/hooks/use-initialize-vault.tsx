@@ -4,6 +4,7 @@ import { useAnchorProvider } from '@/components/solana/solana-provider'
 import { getPlanVaultProgram } from '@/lib/plan-vault-program'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { getVaultPda, getPlanPda } from '@/lib/plan-vault-utils'
+import { toast } from 'sonner'
 
 export function useInitializeVault() {
   const { publicKey } = useWallet()
@@ -33,7 +34,7 @@ export function useInitializeVault() {
     },
     onError: (error: Error) => {
       console.error(error)
-      alert(`Error: ${error.message}`)
+      toast.error(error.message)
     },
   })
 }
