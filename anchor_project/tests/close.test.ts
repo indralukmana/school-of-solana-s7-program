@@ -18,9 +18,9 @@ describe('close-vault', () => {
 	let ownerKeypair: web3.Keypair;
 
 	beforeAll(async () => {
-		const initalizedProgram = await getProgram();
-		program = initalizedProgram.program;
-		ownerKeypair = initalizedProgram.wallets.ownerKeypair;
+		const initializedProgram = await getProgram();
+		program = initializedProgram.program;
+		ownerKeypair = initializedProgram.wallets.ownerKeypair;
 	});
 
 	it('Can close a vault after submitting a plan', async () => {

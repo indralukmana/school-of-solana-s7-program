@@ -13,9 +13,9 @@ describe('vault-initialize', () => {
 	const { planTitle } = getVaultDefaultValues();
 
 	beforeAll(async () => {
-		const initalizedProgram = await getProgram();
-		program = initalizedProgram.program;
-		ownerKeypair = initalizedProgram.wallets.ownerKeypair;
+		const initializedProgram = await getProgram();
+		program = initializedProgram.program;
+		ownerKeypair = initializedProgram.wallets.ownerKeypair;
 	});
 
 	it('Can be initialized successfully!', async () => {
