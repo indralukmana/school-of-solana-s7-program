@@ -45,7 +45,6 @@ export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | 
       queryClient.invalidateQueries({ queryKey: ['get-plan', { planAddress }] })
     },
     onError: (error: Error) => {
-      console.error(error)
       toast.error(error.message)
     },
   })

@@ -36,7 +36,6 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
       router.push('/account')
     },
     onError: (error: Error) => {
-      console.error(error)
       toast.error(error.message)
     },
   })

@@ -25,7 +25,6 @@ export function useWithdraw(vaultAddress: PublicKey) {
       return queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
     },
     onError: (error: Error) => {
-      console.error(error)
       toast.error(error.message)
     },
   })

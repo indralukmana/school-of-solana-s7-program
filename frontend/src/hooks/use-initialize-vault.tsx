@@ -33,7 +33,6 @@ export function useInitializeVault() {
       return queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
     },
     onError: (error: Error) => {
-      console.error(error)
       toast.error(error.message)
     },
   })
