@@ -68,6 +68,39 @@ describe('close-vault', () => {
 		expect(planAccountAfter).toBeNull();
 	});
 
+	it('Can close a vault after depositing without submitting a plan', async () => {
+		const planTitle = 'successful-close-after-deposit';
+		const { vaultPda, planPda } = await createAndInitializeVault({
+			program,
+			ownerKeypair,
+			planTitle,
+		});
+
+		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+		const { tx: depositTx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
+
+		const { tx: closeTx } = await getCloseVaultTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			planPda,
+		});
+		await txSendAndConfirm(program, closeTx, [ownerKeypair]);
+
+		const vaultAccountAfter =
+			await program.provider.connection.getAccountInfo(vaultPda);
+		expect(vaultAccountAfter).toBeNull();
+		const planAccountAfter =
+			await program.provider.connection.getAccountInfo(planPda);
+		expect(planAccountAfter).toBeNull();
+	});
+
 	it('Can close a vault before submitting a plan', async () => {
 		// 1. Create vault and empty plan
 		const planTitle = 'successful-close-before-submit';
