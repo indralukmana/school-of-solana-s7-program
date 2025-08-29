@@ -78,7 +78,7 @@ describe('submit-plan', () => {
 
 		await expect(
 			txSendAndConfirm(program, tx, [ownerKeypair]),
-		).rejects.toThrow();
+		).rejects.toThrow(/Vault funds must be greater than 0/);
 	});
 
 	it('Should fail to submit a plan by a different user', async () => {
@@ -100,7 +100,7 @@ describe('submit-plan', () => {
 
 		await expect(
 			txSendAndConfirm(program, tx, [anotherUser]),
-		).rejects.toThrow();
+		).rejects.toThrow(/raw constraint/);
 	});
 
 	it('Should fail with long ticker', async () => {
@@ -130,6 +130,6 @@ describe('submit-plan', () => {
 		});
 		await expect(
 			txSendAndConfirm(program, submitTx, [ownerKeypair]),
-		).rejects.toThrow();
+		).rejects.toThrow(/Input string exceeds max length/);
 	});
 });

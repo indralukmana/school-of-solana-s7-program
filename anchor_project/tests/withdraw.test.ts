@@ -111,7 +111,7 @@ describe('withdraw', () => {
 
 		await expect(
 			txSendAndConfirm(program, withdrawTx, [ownerKeypair]),
-		).rejects.toThrow();
+		).rejects.toThrow(/Vault is locked/);
 	});
 
 	it('Should fail to withdraw by a different user', async () => {
@@ -149,6 +149,6 @@ describe('withdraw', () => {
 
 		await expect(
 			txSendAndConfirm(program, withdrawTx, [anotherUser]),
-		).rejects.toThrow();
+		).rejects.toThrow(/raw constraint/);
 	});
 });

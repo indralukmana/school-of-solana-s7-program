@@ -68,7 +68,7 @@ describe('vault-deposit', () => {
 
 		await expect(
 			txSendAndConfirm(program, tx, [ownerKeypair]),
-		).rejects.toThrow();
+		).rejects.toThrow(/Must transfer more than 0/);
 	});
 
 	it('Cannot deposit with insufficient funds', async () => {
@@ -93,7 +93,7 @@ describe('vault-deposit', () => {
 
 		await expect(
 			txSendAndConfirm(program, tx, [ownerKeypair]),
-		).rejects.toThrow();
+		).rejects.toThrow(/Insufficient funds/);
 	});
 
 	it('Another user cannot deposit into the vault', async () => {
@@ -116,6 +116,6 @@ describe('vault-deposit', () => {
 
 		await expect(
 			txSendAndConfirm(program, tx, [anotherUser]),
-		).rejects.toThrow();
+		).rejects.toThrow(/raw constraint/);
 	});
 });

@@ -115,7 +115,7 @@ describe('close-vault', () => {
 
 		await expect(
 			txSendAndConfirm(program, closeTx, [anotherUser]),
-		).rejects.toThrow();
+		).rejects.toThrow(/raw constraint/);
 	});
 
 	it('Should fail to close a vault with a plan from a different vault', async () => {
@@ -146,6 +146,6 @@ describe('close-vault', () => {
 		// This should fail due to the has_one constraint
 		await expect(
 			txSendAndConfirm(program, closeTx, [ownerKeypair]),
-		).rejects.toThrow();
+		).rejects.toThrow(/has_one constraint/);
 	});
 });

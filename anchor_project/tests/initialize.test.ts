@@ -78,7 +78,7 @@ describe('vault-initialize', () => {
 				ownerKeypair,
 				planTitle: shortTitle,
 			}),
-		).rejects.toThrow();
+		).rejects.toThrow(/Title must be at least 3 characters/);
 	});
 
 	it('Cannot be initialized with single letter title', async () => {
@@ -89,7 +89,7 @@ describe('vault-initialize', () => {
 				ownerKeypair,
 				planTitle: shortTitle,
 			}),
-		).rejects.toThrow();
+		).rejects.toThrow(/Title must be at least 3 characters/);
 	});
 
 	it('Should fail when the vault is already initialized', async () => {
@@ -106,7 +106,7 @@ describe('vault-initialize', () => {
 				ownerKeypair,
 				planTitle,
 			}),
-		).rejects.toThrow();
+		).rejects.toThrow(/already in use/);
 	});
 
 	it('Can be initialized with a 200-character title', async () => {
@@ -130,7 +130,7 @@ describe('vault-initialize', () => {
 				ownerKeypair,
 				planTitle: longTitle,
 			}),
-		).rejects.toThrow();
+		).rejects.toThrow(/Title must not exceed 200 characters/);
 	});
 
 	it('Cannot be initialized with a title shorter than 3 characters', async () => {
@@ -141,6 +141,6 @@ describe('vault-initialize', () => {
 				ownerKeypair,
 				planTitle: shortTitle,
 			}),
-		).rejects.toThrow();
+		).rejects.toThrow(/Title must be at least 3 characters/);
 	});
 });
