@@ -145,10 +145,10 @@ The tests cover all the instructions and their various scenarios.
 ### Running Tests
 
 ```bash
-anchor test
+pnpm test:program
 ```
 
-### Additional Notes for Evaluators
+### Design Notes
 
 This project uses native SOL for the vault. A potential future enhancement would
 be to support SPL tokens, such as stablecoins, for the trading funds. The
