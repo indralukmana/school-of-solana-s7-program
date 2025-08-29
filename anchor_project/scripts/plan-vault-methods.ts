@@ -1,7 +1,7 @@
 import { Program, web3, BN } from '@coral-xyz/anchor';
 import type { PlanVault } from '../target/types/plan_vault';
 
-export const ONE_SOL = 100_0000_000; // 1 SOL in lamports
+export const ONE_SOL = 1_000_000_000 // 1 SOL in lamports
 export const VAULT_SEED = 'vault';
 export const PLAN_SEED = 'plan';
 
