@@ -13,6 +13,6 @@ pub struct Plan {
     #[max_len(10)]
     pub ticker: String,
     pub investment_amount: u64,
-    pub stop_loss: f64,
-    pub take_profit: f64,
+    pub stop_loss_bps: u64,
+    pub take_profit_bps: u64,
 }

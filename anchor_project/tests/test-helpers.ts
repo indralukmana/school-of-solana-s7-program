@@ -30,8 +30,8 @@ export const getDefaultPlanArgs = () => {
 		riskLevel: 'High',
 		ticker: 'SOL',
 		investmentAmount: new BN(ONE_SOL),
-		stopLoss: 0.9,
-		takeProfit: 1.5,
+		stopLossBps: new BN(500),
+		takeProfitBps: new BN(1000),
 	};
 };
 

@@ -54,8 +54,12 @@ describe('submit-plan', () => {
 		expect(storedPlan.investmentAmount.toNumber()).toEqual(
 			args.investmentAmount.toNumber(),
 		);
-		expect(storedPlan.stopLoss).toEqual(args.stopLoss);
-		expect(storedPlan.takeProfit).toEqual(args.takeProfit);
+		expect(storedPlan.stopLossBps.toNumber()).toEqual(
+			args.stopLossBps.toNumber(),
+		);
+		expect(storedPlan.takeProfitBps.toNumber()).toEqual(
+			args.takeProfitBps.toNumber(),
+		);
 		expect(storedPlan.tradingPlatform).toEqual(args.tradingPlatform);
 		expect(storedPlan.riskLevel).toEqual(args.riskLevel);
 	});

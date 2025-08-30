@@ -26,8 +26,8 @@ pub struct PlanArgs {
     pub risk_level: String,
     pub ticker: String,
     pub investment_amount: u64,
-    pub stop_loss: f64,
-    pub take_profit: f64,
+    pub stop_loss_bps: u64,
+    pub take_profit_bps: u64,
 }
 
 pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<()> {
@@ -61,8 +61,8 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<(
     plan.risk_level = args.risk_level;
     plan.ticker = args.ticker;
     plan.investment_amount = args.investment_amount;
-    plan.stop_loss = args.stop_loss;
-    plan.take_profit = args.take_profit;
+    plan.stop_loss_bps = args.stop_loss_bps;
+    plan.take_profit_bps = args.take_profit_bps;
     plan.plan_title = vault.plan_title.clone();
 
     Ok(())

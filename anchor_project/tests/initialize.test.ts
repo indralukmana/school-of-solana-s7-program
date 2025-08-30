@@ -40,8 +40,8 @@ describe('vault-initialize', () => {
 		expect(storedPlan.riskLevel).toEqual('');
 		expect(storedPlan.ticker).toEqual('');
 		expect(storedPlan.investmentAmount.toNumber()).toEqual(0);
-		expect(storedPlan.stopLoss).toEqual(0);
-		expect(storedPlan.takeProfit).toEqual(0);
+		expect(storedPlan.stopLossBps.toNumber()).toEqual(0);
+		expect(storedPlan.takeProfitBps.toNumber()).toEqual(0);
 	});
 
 	it('Can be initialized with a long title', async () => {
