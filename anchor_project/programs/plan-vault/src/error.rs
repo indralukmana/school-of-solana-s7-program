@@ -17,6 +17,8 @@ pub enum DepositErrors {
     TransferFailed,
     #[msg("Must transfer more than 0")]
     MustTransferMoreThanZero,
+    #[msg("Vault is not locked")]
+    VaultNotLocked,
 }
 
 #[error_code]

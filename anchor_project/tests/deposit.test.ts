@@ -6,7 +6,8 @@ import {
 } from './test-helpers';
 import { PlanVault } from '../target/types/plan_vault';
 import { describe, it, expect, beforeAll } from 'vitest';
-import { getDepositTx } from '../scripts/plan-vault-methods';
+import { getDepositTx, getSubmitPlanTx } from '../scripts/plan-vault-methods';
+import { getDefaultPlanArgs } from './test-helpers';
 
 describe('vault-deposit', () => {
 	let program: Program<PlanVault>;
@@ -117,5 +118,44 @@ describe('vault-deposit', () => {
 		await expect(
 			txSendAndConfirm(program, tx, [anotherUser]),
 		).rejects.toThrow(/raw constraint/);
+	});
+
+	it('Cannot deposit into an unlocked vault', async () => {
+		const planTitle = 'unlocked-deposit';
+		const { vaultPda } = await createAndInitializeVault({
+			program,
+			ownerKeypair,
+			planTitle,
+		});
+
+		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+		const { tx: depositTx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: depositAmount,
+		});
+		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
+
+		const args = getDefaultPlanArgs();
+		const { tx: submitTx } = await getSubmitPlanTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			args,
+		});
+		await txSendAndConfirm(program, submitTx, [ownerKeypair]);
+
+		const secondDeposit = new BN(web3.LAMPORTS_PER_SOL);
+		const { tx } = await getDepositTx({
+			program,
+			ownerPublicKey: ownerKeypair.publicKey,
+			vaultPda,
+			amount: secondDeposit,
+		});
+
+		await expect(
+			txSendAndConfirm(program, tx, [ownerKeypair]),
+		).rejects.toThrow(/Vault is not locked/);
 	});
 });

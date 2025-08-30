@@ -1,7 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 
-use crate::{error::DepositErrors, state::VaultAccount};
+use crate::{
+    error::DepositErrors,
+    state::{VaultAccount, VaultStatus},
+};
 
 #[derive(Accounts)]
 pub struct Deposit<'info> {
@@ -18,6 +21,10 @@ pub fn deposit_handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     require!(
         ctx.accounts.owner.lamports() >= amount,
         DepositErrors::InsufficientFunds
+    );
+    require!(
+        ctx.accounts.vault_account.status == VaultStatus::Locked,
+        DepositErrors::VaultNotLocked
     );
 
     let system_program = &mut ctx.accounts.system_program;
