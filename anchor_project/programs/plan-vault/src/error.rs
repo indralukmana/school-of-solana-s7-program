@@ -1,16 +1,11 @@
 use anchor_lang::prelude::*;
 
 #[error_code]
-pub enum InitializeErrors {
+pub enum PlanVaultError {
     #[msg("Title must be at least 3 characters")]
     TitleTooShort,
     #[msg("Title must not exceed 200 characters")]
     TitleTooLong,
-}
-
-// Deposit errors
-#[error_code]
-pub enum DepositErrors {
     #[msg("Insufficient funds")]
     InsufficientFunds,
     #[msg("Failed to transfer tokens")]
@@ -19,16 +14,8 @@ pub enum DepositErrors {
     MustTransferMoreThanZero,
     #[msg("Vault is not locked")]
     VaultNotLocked,
-}
-
-#[error_code]
-pub enum WithdrawErrors {
     #[msg("Vault is locked")]
     VaultLocked,
-}
-
-#[error_code]
-pub enum SubmitPlanErrors {
     #[msg("Vault funds must be greater than 0")]
     InsufficientVaultFunds,
     #[msg("Input string exceeds max length")]

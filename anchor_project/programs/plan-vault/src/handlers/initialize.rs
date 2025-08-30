@@ -5,7 +5,7 @@ use crate::{
 use anchor_lang::prelude::*;
 use sha2::{Digest, Sha256};
 
-use crate::{constants::VAULT_SEED, error::InitializeErrors, state::VaultAccount};
+use crate::{constants::VAULT_SEED, error::PlanVaultError, state::VaultAccount};
 
 #[derive(Accounts)]
 #[instruction(plan_title: String)]
@@ -35,8 +35,8 @@ pub struct InitializeVault<'info> {
 }
 
 pub fn initialize_handler(ctx: Context<InitializeVault>, plan_title: String) -> Result<()> {
-    require!(plan_title.len() >= 3, InitializeErrors::TitleTooShort);
-    require!(plan_title.len() <= 200, InitializeErrors::TitleTooLong);
+    require!(plan_title.len() >= 3, PlanVaultError::TitleTooShort);
+    require!(plan_title.len() <= 200, PlanVaultError::TitleTooLong);
 
     let vault = &mut ctx.accounts.vault_account;
     vault.owner = *ctx.accounts.owner.key;

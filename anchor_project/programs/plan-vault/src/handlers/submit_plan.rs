@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    error::SubmitPlanErrors,
+    error::PlanVaultError,
     state::{Plan, VaultAccount, VaultStatus},
 };
 
@@ -44,18 +44,15 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<(
     // Check for positive balance above rent
     require!(
         lamports > rent_exempt,
-        SubmitPlanErrors::InsufficientVaultFunds
+        PlanVaultError::InsufficientVaultFunds
     );
     vault.status = VaultStatus::Unlocked;
 
     let plan = &mut ctx.accounts.plan;
 
-    require!(
-        args.trading_platform.len() <= 100,
-        SubmitPlanErrors::TooLong
-    );
-    require!(args.risk_level.len() <= 100, SubmitPlanErrors::TooLong);
-    require!(args.ticker.len() <= 10, SubmitPlanErrors::TooLong);
+    require!(args.trading_platform.len() <= 100, PlanVaultError::TooLong);
+    require!(args.risk_level.len() <= 100, PlanVaultError::TooLong);
+    require!(args.ticker.len() <= 10, PlanVaultError::TooLong);
 
     plan.trading_platform = args.trading_platform;
     plan.risk_level = args.risk_level;

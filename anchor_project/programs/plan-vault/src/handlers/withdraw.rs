@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
-use crate::state::VaultAccount;
+use crate::error::PlanVaultError;
+use crate::state::{VaultAccount, VaultStatus};
 
 #[derive(Accounts)]
 pub struct Withdraw<'info> {
@@ -16,8 +17,8 @@ pub fn withdraw_handler(ctx: Context<Withdraw>) -> Result<()> {
     let owner = &mut ctx.accounts.owner;
 
     require!(
-        vault.status == crate::state::VaultStatus::Unlocked,
-        crate::error::WithdrawErrors::VaultLocked
+        vault.status == VaultStatus::Unlocked,
+        PlanVaultError::VaultLocked
     );
 
     // Compute rent-exempt minimum for this account's current data size
