@@ -17,8 +17,8 @@ export function PlanForm({ vaultAddress, planPda }: PlanFormProps) {
     riskLevel: '',
     ticker: '',
     investmentAmount: 0,
-    stopLoss: 0,
-    takeProfit: 0,
+    stopLossBps: 0,
+    takeProfitBps: 0,
   })
   const submitPlan = useSubmitPlan(vaultAddress, planPda)
 
@@ -42,8 +42,8 @@ export function PlanForm({ vaultAddress, planPda }: PlanFormProps) {
           placeholder="Investment Amount (SOL)"
           onChange={handlePlanChange}
         />
-        <Input name="stopLoss" type="number" placeholder="Stop Loss" onChange={handlePlanChange} />
-        <Input name="takeProfit" type="number" placeholder="Take Profit" onChange={handlePlanChange} />
+        <Input name="stopLossBps" type="number" placeholder="Stop Loss (bps)" onChange={handlePlanChange} />
+        <Input name="takeProfitBps" type="number" placeholder="Take Profit (bps)" onChange={handlePlanChange} />
       </div>
       <Button onClick={() => submitPlan.mutate(planDetails)} disabled={submitPlan.isPending} className="mt-4">
         {submitPlan.isPending ? 'Submitting...' : 'Submit Plan'}

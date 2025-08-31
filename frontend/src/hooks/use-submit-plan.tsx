@@ -12,8 +12,8 @@ interface SubmitPlanArgs {
   riskLevel: string
   ticker: string
   investmentAmount: number
-  stopLoss: number
-  takeProfit: number
+  stopLossBps: number
+  takeProfitBps: number
 }
 
 export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | null) {
@@ -30,8 +30,12 @@ export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | 
       if (!planAddress) throw new Error('Plan address not available')
 
       const planArgs = {
-        ...plan,
+        tradingPlatform: plan.tradingPlatform,
+        riskLevel: plan.riskLevel,
+        ticker: plan.ticker,
         investmentAmount: new BN(plan.investmentAmount * LAMPORTS_PER_SOL),
+        stopLossBps: new BN(plan.stopLossBps),
+        takeProfitBps: new BN(plan.takeProfitBps),
       }
 
       return program.methods
