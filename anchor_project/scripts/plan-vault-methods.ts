@@ -5,6 +5,15 @@ export const ONE_SOL = 1_000_000_000 // 1 SOL in lamports
 export const VAULT_SEED = 'vault';
 export const PLAN_SEED = 'plan';
 
+export interface SubmitPlanArgs {
+	tradingPlatform: string;
+	riskLevel: string;
+	ticker: string;
+	investmentAmount: BN;
+	stopLossBps: BN;
+	takeProfitBps: BN;
+}
+
 export const sha256Bytes = async (input: string): Promise<Uint8Array> => {
 	const enc = new TextEncoder();
 	const data = enc.encode(input);
@@ -110,7 +119,7 @@ export const getSubmitPlanTx = async ({
 	program: Program<PlanVault>;
 	ownerPublicKey: web3.PublicKey;
 	vaultPda: web3.PublicKey;
-	args: any;
+  args: SubmitPlanArgs;
 }) => {
 	const { planPda } = getPlanPda({
 		vaultPublicKey: vaultPda,
