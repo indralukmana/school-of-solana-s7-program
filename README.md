@@ -2,7 +2,8 @@
 
 Decentralized trading diary with a commitment vault on Solana. Create vaults for trading plans, deposit SOL as commitment, and withdraw only after submitting a detailed plan — enforcing a disciplined approach to trading.
 
-**Frontend:** [plan-vault-ackee-program-task.vercel.app](https://plan-vault-ackee-program-task.vercel.app)
+**Frontend:** [plan-vault-ackee-program-task.vercel.app](https://plan-vault-ackee-program-task.vercel.app)  
+**Program (Devnet):** `24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc` — [Solana Explorer](https://explorer.solana.com/address/24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc?cluster=devnet)
 
 ## Features
 
