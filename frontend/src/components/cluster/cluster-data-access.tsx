@@ -64,7 +64,7 @@ export interface ClusterProviderContext {
   getExplorerUrl(path: string): string
 }
 
-const Context = createContext<ClusterProviderContext>({} as ClusterProviderContext)
+const Context = createContext<ClusterProviderContext | null>(null)
 
 export function ClusterProvider({ children }: { children: ReactNode }) {
   const cluster = useAtomValue(activeClusterAtom)
@@ -92,7 +92,11 @@ export function ClusterProvider({ children }: { children: ReactNode }) {
 }
 
 export function useCluster() {
-  return useContext(Context)
+  const ctx = useContext(Context)
+  if (!ctx) {
+    throw new Error('useCluster must be used within a ClusterProvider')
+  }
+  return ctx
 }
 
 function getClusterUrlParam(cluster: SolanaCluster): string {
