@@ -26,27 +26,7 @@ export function DepositForm({ vaultAddress }: { vaultAddress: PublicKey }) {
   }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value
-    // Allow only numbers and a single dot
-    value = value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1')
-
-    // Remove leading zeros for integers, but allow "0."
-    if (value.length > 1 && value.startsWith('0') && !value.startsWith('0.')) {
-      value = value.replace(/^0+/, '')
-    }
-
-    // Prepend '0' if starts with '.'
-    if (value.startsWith('.')) {
-      value = '0' + value
-    }
-
-    // Limit to 9 decimal places
-    const parts = value.split('.')
-    if (parts[1] && parts[1].length > 9) {
-      value = `${parts[0]}.${parts[1].substring(0, 9)}`
-    }
-
-    setAmount(value)
+    setAmount(e.target.value)
   }
 
   const depositAmount = parseFloat(amount) || 0
@@ -57,7 +37,8 @@ export function DepositForm({ vaultAddress }: { vaultAddress: PublicKey }) {
       <div className="flex items-center space-x-2">
         <div className="relative flex-grow">
           <Input
-            type="text"
+            type="number"
+            step="any"
             placeholder="Amount in SOL"
             value={amount}
             onChange={handleAmountChange}
