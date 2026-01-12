@@ -1,15 +1,17 @@
 [toolchain]
 package_manager = "pnpm"
+anchor_version = "0.32.1"
+solana_version = "4.0.3"
 
 [features]
 resolution = true
 skip-lint = false
 
 [programs.localnet]
-plan_vault = "2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH"
+plan_vault = "HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e"
 
 [programs.devnet]
-plan_vault = "2fpLYyQNW3C2teCfRmXRBo38nzggoSC6cB4wd9jMisXH"
+plan_vault = "HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e"
 
 [registry]
 url = "https://api.apr.dev"

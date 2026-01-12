@@ -1,84 +1,95 @@
 import {
-	AnchorProvider,
-	Program,
-	setProvider,
-	web3,
-	workspace,
-	BN,
-} from '@coral-xyz/anchor';
-import { PlanVault } from '../target/types/plan_vault';
-import { getInitializeVaultTx, ONE_SOL } from '../scripts/plan-vault-methods';
+  AnchorProvider,
+  Program,
+  setProvider,
+  web3,
+  workspace,
+  BN,
+} from "@coral-xyz/anchor";
+import { PlanVault } from "../target/types/plan_vault";
+import { getInitializeVaultTx, ONE_SOL } from "../scripts/plan-vault-methods";
 
 export const txSendAndConfirm = async (
-	program: Program<PlanVault>,
-	tx: web3.Transaction,
-	signers: web3.Keypair[],
+  program: Program<PlanVault>,
+  tx: web3.Transaction,
+  signers: web3.Keypair[],
 ) => {
-	return await program.provider.sendAndConfirm?.(tx, signers);
+  try {
+    return await program.provider.sendAndConfirm?.(tx, signers);
+  } catch (e: any) {
+    const logs = e.logs as string[] | undefined;
+    if (logs) {
+      const match = logs.join("\n").match(/Error Code: (Constraint\w+)/);
+      if (match) {
+        throw new Error(`Anchor Error: ${match[1]}`);
+      }
+    }
+    throw e;
+  }
 };
 
 export const getVaultDefaultValues = () => {
-	// vault default values
-	const planTitle = 'Initial Example Plan';
+  // vault default values
+  const planTitle = "Initial Example Plan";
 
-	return { planTitle };
+  return { planTitle };
 };
 
 export const getDefaultPlanArgs = () => {
-	return {
-		tradingPlatform: 'Jupiter',
-		riskLevel: 'High',
-		ticker: 'SOL',
-		investmentAmount: new BN(ONE_SOL),
-		stopLossBps: new BN(500),
-		takeProfitBps: new BN(1000),
-	};
+  return {
+    tradingPlatform: "Jupiter",
+    riskLevel: "High",
+    ticker: "SOL",
+    investmentAmount: new BN(ONE_SOL),
+    stopLossBps: new BN(500),
+    takeProfitBps: new BN(1000),
+  };
 };
 
 export const getProgram = async () => {
-	// Configure the client to use the local cluster.
-	const provider = AnchorProvider.env();
-	setProvider(provider);
+  // Configure the client to use the local cluster.
+  const provider = AnchorProvider.env();
+  setProvider(provider);
 
-	const program = workspace.plan_vault as Program<PlanVault>;
+  const program = workspace.plan_vault as Program<PlanVault>;
 
-	const ownerKeypair = web3.Keypair.generate();
+  const ownerKeypair = web3.Keypair.generate();
 
-	// Request airdrop
-	const signature = await provider.connection.requestAirdrop(
-		ownerKeypair.publicKey,
-		ONE_SOL * 10,
-	);
+  // Request airdrop
+  const signature = await provider.connection.requestAirdrop(
+    ownerKeypair.publicKey,
+    ONE_SOL * 10,
+  );
 
-	const { blockhash, lastValidBlockHeight } =
-		await provider.connection.getLatestBlockhash();
+  const { blockhash, lastValidBlockHeight } =
+    await provider.connection.getLatestBlockhash();
 
-	await provider.connection.confirmTransaction(
-		{ blockhash, lastValidBlockHeight, signature },
-		'confirmed',
-	);
+  await provider.connection.confirmTransaction(
+    { blockhash, lastValidBlockHeight, signature },
+    "confirmed",
+  );
 
-	const wallets = { ownerKeypair };
+  const wallets = { ownerKeypair };
 
-	return { program, provider, wallets };
+  return { program, provider, wallets };
 };
 
 export const createAndInitializeVault = async ({
-	program,
-	ownerKeypair,
-	planTitle,
+  program,
+  ownerKeypair,
+  planTitle,
 }: {
-	program: Program<PlanVault>;
-	ownerKeypair: web3.Keypair;
-	planTitle: string;
+  program: Program<PlanVault>;
+  ownerKeypair: web3.Keypair;
+  planTitle: string;
 }) => {
-	const { tx, vaultPda, planPda, hashedTitle } = await getInitializeVaultTx({
-		program,
-		ownerPublicKey: ownerKeypair.publicKey,
-		planTitle,
-	});
+  const { tx, vaultPda, planPda, hashedTitle } = await getInitializeVaultTx({
+    program,
+    ownerPublicKey: ownerKeypair.publicKey,
+    planTitle,
+  });
 
-	await txSendAndConfirm(program, tx, [ownerKeypair]);
+  await txSendAndConfirm(program, tx, [ownerKeypair]);
 
-	return { vaultPda, planPda, hashedTitle };
+  return { vaultPda, planPda, hashedTitle };
 };

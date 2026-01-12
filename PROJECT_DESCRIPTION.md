@@ -2,8 +2,8 @@
 
 **Deployed Frontend URL:** <https://plan-vault-ackee-program-task.vercel.app>
 
-**Solana Program ID:** 24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc
-[Solana Explorer](https://explorer.solana.com/address/24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc?cluster=devnet)
+**Solana Program ID:** HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e
+[Solana Explorer](https://explorer.solana.com/address/HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e?cluster=devnet)
 
 ## Project Overview
 

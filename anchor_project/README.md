@@ -54,8 +54,8 @@ The program uses PDAs to create unique accounts for each vault and plan.
 Before getting started, make sure you have the following installed:
 
 - [Rust](https://www.rust-lang.org/tools/install)
-- [Solana Tool Suite](https://docs.solana.com/cli/install-solana-cli-tools)
-- [Anchor CLI](https://www.anchor-lang.com/docs/installation)
+- [Solana Tool Suite](https://docs.solana.com/cli/install-solana-cli-tools) 4.0.3+
+- [Anchor CLI](https://www.anchor-lang.com/docs/installation) 0.32.1
 - [Node.js](https://nodejs.org/en/)
 - [pnpm](https://pnpm.io/installation)
 
@@ -69,15 +69,48 @@ pnpm install
 
 ## Building the Program
 
-To build the Anchor program, run:
+### For local testing
 
 ```bash
-pnpm build
+anchor build        # builds program + generates IDL + TypeScript types
+pnpm build          # same as above, also copies IDL/types to frontend
 ```
 
-This project also includes a script to copy the generated IDL and types to the
-frontend project. This command will execute `anchor build` and then copy the
-necessary files.
+### For deployment (Devnet / Mainnet)
+
+Devnet has activated [SIMD-0500](https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0500-disable-deployment-of-sbpf-v0-v1-v2.md),
+which rejects programs compiled with SBPFv0/v1/v2. You **must** build with
+`--arch v3` (SBPFv3) for deployment:
+
+```bash
+cargo build-sbf --arch v3 --manifest-path programs/plan-vault/Cargo.toml
+solana program deploy --url devnet target/deploy/plan_vault.so --program-id target/deploy/plan_vault-keypair.json --skip-feature-verify
+```
+
+> `--skip-feature-verify` is needed because the local Solana CLI may not yet
+> recognize SBPFv3 as enabled — the cluster validates it correctly.
+
+> **Note:** `anchor build` does not currently support `--arch v3`. Use
+> `cargo build-sbf` for deployment builds. For local testing, `anchor build`
+> (with default SBPFv0) works fine — the local test validator is unaffected.
+
+### Platform-tools v1.54
+
+If you encounter `sbpfv3-solana-solana` target not found, download and install
+platform-tools v1.54:
+
+```bash
+curl -sSfL -o /tmp/platform-tools-v1.54.tar.bz2 \
+  "https://github.com/anza-xyz/platform-tools/releases/download/v1.54/platform-tools-linux-x86_64.tar.bz2"
+mkdir -p ~/.cache/solana/v1.54/platform-tools
+tar jxf /tmp/platform-tools-v1.54.tar.bz2 -C ~/.cache/solana/v1.54/platform-tools/
+```
+
+Then rebuild with `--tools-version v1.54`:
+
+```bash
+cargo build-sbf --arch v3 --tools-version v1.54 --manifest-path programs/plan-vault/Cargo.toml
+```
 
 ## Testing
 
@@ -91,3 +124,11 @@ pnpm test
 ```
 
 This will execute the test suite defined in the `tests/` directory using Vitest.
+
+### Test notes
+
+- Tests use `@coral-xyz/anchor@^0.32.1`. In this version, `SendTransactionError`
+  surfaces only `"Simulation failed."` in `.message`. The helper
+  `txSendAndConfirm` in `tests/test-helpers.ts` catches these errors and
+  re-throws with the Anchor error code parsed from transaction logs, so that
+  `.toThrow()` assertions can match against `ConstraintHasOne` etc.

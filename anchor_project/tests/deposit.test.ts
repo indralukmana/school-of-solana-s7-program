@@ -1,161 +1,161 @@
-import { Program, web3, BN } from '@coral-xyz/anchor';
+import { Program, web3, BN } from "@coral-xyz/anchor";
 import {
-	getProgram,
-	createAndInitializeVault,
-	txSendAndConfirm,
-} from './test-helpers';
-import { PlanVault } from '../target/types/plan_vault';
-import { describe, it, expect, beforeAll } from 'vitest';
-import { getDepositTx, getSubmitPlanTx } from '../scripts/plan-vault-methods';
-import { getDefaultPlanArgs } from './test-helpers';
+  getProgram,
+  createAndInitializeVault,
+  txSendAndConfirm,
+} from "./test-helpers";
+import { PlanVault } from "../target/types/plan_vault";
+import { describe, it, expect, beforeAll } from "vitest";
+import { getDepositTx, getSubmitPlanTx } from "../scripts/plan-vault-methods";
+import { getDefaultPlanArgs } from "./test-helpers";
 
-describe('vault-deposit', () => {
-	let program: Program<PlanVault>;
-	let ownerKeypair: web3.Keypair;
+describe("vault-deposit", () => {
+  let program: Program<PlanVault>;
+  let ownerKeypair: web3.Keypair;
 
-	beforeAll(async () => {
-		const initializedProgram = await getProgram();
-		program = initializedProgram.program;
-		ownerKeypair = initializedProgram.wallets.ownerKeypair;
-	});
+  beforeAll(async () => {
+    const initializedProgram = await getProgram();
+    program = initializedProgram.program;
+    ownerKeypair = initializedProgram.wallets.ownerKeypair;
+  });
 
-	it('Vault can be deposited!', async () => {
-		const planTitle = 'deposit-success';
-		const { vaultPda, hashedTitle } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Vault can be deposited!", async () => {
+    const planTitle = "deposit-success";
+    const { vaultPda, hashedTitle } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-		const vaultInitialBalance =
-			await program.provider.connection.getBalance(vaultPda);
+    const vaultInitialBalance =
+      await program.provider.connection.getBalance(vaultPda);
 
-		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+    const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
 
-		const { tx } = await getDepositTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			amount: depositAmount,
-		});
-		await txSendAndConfirm(program, tx, [ownerKeypair]);
+    const { tx } = await getDepositTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      amount: depositAmount,
+    });
+    await txSendAndConfirm(program, tx, [ownerKeypair]);
 
-		const storedVaultAfter = await program.account.vaultAccount.fetch(vaultPda);
-		const vaultBalance = await program.provider.connection.getBalance(vaultPda);
+    const storedVaultAfter = await program.account.vaultAccount.fetch(vaultPda);
+    const vaultBalance = await program.provider.connection.getBalance(vaultPda);
 
-		expect(storedVaultAfter.planTitleHash).toEqual(Array.from(hashedTitle));
-		expect(storedVaultAfter.owner).toEqual(ownerKeypair.publicKey);
-		expect(storedVaultAfter.status).toEqual({ locked: {} });
-		expect(storedVaultAfter.planTitle).toEqual(planTitle);
-		expect(vaultBalance).toEqual(vaultInitialBalance + Number(depositAmount));
-	});
+    expect(storedVaultAfter.planTitleHash).toEqual(Array.from(hashedTitle));
+    expect(storedVaultAfter.owner).toEqual(ownerKeypair.publicKey);
+    expect(storedVaultAfter.status).toEqual({ locked: {} });
+    expect(storedVaultAfter.planTitle).toEqual(planTitle);
+    expect(vaultBalance).toEqual(vaultInitialBalance + Number(depositAmount));
+  });
 
-	it('Cannot deposit zero', async () => {
-		const planTitle = 'deposit-zero';
-		const { vaultPda } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Cannot deposit zero", async () => {
+    const planTitle = "deposit-zero";
+    const { vaultPda } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-		const depositAmount = new BN(0);
+    const depositAmount = new BN(0);
 
-		const { tx } = await getDepositTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			amount: depositAmount,
-		});
+    const { tx } = await getDepositTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      amount: depositAmount,
+    });
 
-		await expect(
-			txSendAndConfirm(program, tx, [ownerKeypair]),
-		).rejects.toThrow(/Must transfer more than 0/);
-	});
+    await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow(
+      /Must transfer more than 0/,
+    );
+  });
 
-	it('Cannot deposit with insufficient funds', async () => {
-		const planTitle = 'insufficient-funds';
-		const { vaultPda } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Cannot deposit with insufficient funds", async () => {
+    const planTitle = "insufficient-funds";
+    const { vaultPda } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-		const ownerBalance = await program.provider.connection.getBalance(
-			ownerKeypair.publicKey,
-		);
-		const depositAmount = new BN(ownerBalance + 1);
+    const ownerBalance = await program.provider.connection.getBalance(
+      ownerKeypair.publicKey,
+    );
+    const depositAmount = new BN(ownerBalance + 1);
 
-		const { tx } = await getDepositTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			amount: depositAmount,
-		});
+    const { tx } = await getDepositTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      amount: depositAmount,
+    });
 
-		await expect(
-			txSendAndConfirm(program, tx, [ownerKeypair]),
-		).rejects.toThrow(/Insufficient funds/);
-	});
+    await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow(
+      /Insufficient funds/,
+    );
+  });
 
-	it('Another user cannot deposit into the vault', async () => {
-		const anotherUser = web3.Keypair.generate();
-		const planTitle = 'another-user-deposit';
-		const { vaultPda } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Another user cannot deposit into the vault", async () => {
+    const anotherUser = web3.Keypair.generate();
+    const planTitle = "another-user-deposit";
+    const { vaultPda } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+    const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
 
-		const { tx } = await getDepositTx({
-			program,
-			ownerPublicKey: anotherUser.publicKey,
-			vaultPda,
-			amount: depositAmount,
-		});
+    const { tx } = await getDepositTx({
+      program,
+      ownerPublicKey: anotherUser.publicKey,
+      vaultPda,
+      amount: depositAmount,
+    });
 
-		await expect(
-			txSendAndConfirm(program, tx, [anotherUser]),
-		).rejects.toThrow(/raw constraint/);
-	});
+    await expect(txSendAndConfirm(program, tx, [anotherUser])).rejects.toThrow(
+      /ConstraintHasOne/,
+    );
+  });
 
-	it('Cannot deposit into an unlocked vault', async () => {
-		const planTitle = 'unlocked-deposit';
-		const { vaultPda } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Cannot deposit into an unlocked vault", async () => {
+    const planTitle = "unlocked-deposit";
+    const { vaultPda } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-		const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
-		const { tx: depositTx } = await getDepositTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			amount: depositAmount,
-		});
-		await txSendAndConfirm(program, depositTx, [ownerKeypair]);
+    const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+    const { tx: depositTx } = await getDepositTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      amount: depositAmount,
+    });
+    await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
-		const args = getDefaultPlanArgs();
-		const { tx: submitTx } = await getSubmitPlanTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			args,
-		});
-		await txSendAndConfirm(program, submitTx, [ownerKeypair]);
+    const args = getDefaultPlanArgs();
+    const { tx: submitTx } = await getSubmitPlanTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      args,
+    });
+    await txSendAndConfirm(program, submitTx, [ownerKeypair]);
 
-		const secondDeposit = new BN(web3.LAMPORTS_PER_SOL);
-		const { tx } = await getDepositTx({
-			program,
-			ownerPublicKey: ownerKeypair.publicKey,
-			vaultPda,
-			amount: secondDeposit,
-		});
+    const secondDeposit = new BN(web3.LAMPORTS_PER_SOL);
+    const { tx } = await getDepositTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      amount: secondDeposit,
+    });
 
-		await expect(
-			txSendAndConfirm(program, tx, [ownerKeypair]),
-		).rejects.toThrow(/Vault is not locked/);
-	});
+    await expect(txSendAndConfirm(program, tx, [ownerKeypair])).rejects.toThrow(
+      /Vault is not locked/,
+    );
+  });
 });

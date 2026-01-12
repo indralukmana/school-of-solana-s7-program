@@ -1,17 +1,17 @@
 {
-	"license": "ISC",
-	"scripts": {
-		"build": "anchor build && cp target/idl/*.json ../frontend/src/lib/anchor-dist/idl && cp target/types/*.ts ../frontend/src/lib/anchor-dist/types  ",
-		"test": "anchor test"
-	},
-	"dependencies": {
-		"@coral-xyz/anchor": "^0.31.1"
-	},
-	"devDependencies": {
-		"@types/bn.js": "^5.1.0",
-		"prettier": "3.6.2",
-		"typescript": "^5.7.3",
-		"vite": "^7.1.3",
-		"vitest": "^3.2.4"
-	}
+  "license": "ISC",
+  "scripts": {
+    "build": "anchor build && cp target/idl/*.json ../frontend/src/lib/anchor-dist/idl && cp target/types/*.ts ../frontend/src/lib/anchor-dist/types  ",
+    "test": "anchor test"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.0",
+    "prettier": "3.6.2",
+    "typescript": "^5.7.3",
+    "vite": "^7.1.3",
+    "vitest": "^3.2.4"
+  }
 }

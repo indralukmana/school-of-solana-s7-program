@@ -3,7 +3,7 @@
 Decentralized trading diary with a commitment vault on Solana. Create vaults for trading plans, deposit SOL as commitment, and withdraw only after submitting a detailed plan — enforcing a disciplined approach to trading.
 
 **Frontend:** [plan-vault-ackee-program-task.vercel.app](https://plan-vault-ackee-program-task.vercel.app)  
-**Program (Devnet):** `24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc` — [Solana Explorer](https://explorer.solana.com/address/24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc?cluster=devnet)
+**Program (Devnet):** `HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e` — [Solana Explorer](https://explorer.solana.com/address/HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e?cluster=devnet)
 
 ## Features
 
@@ -15,25 +15,25 @@ Decentralized trading diary with a commitment vault on Solana. Create vaults for
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Smart Contract | Rust, [Anchor](https://www.anchor-lang.com/) 0.31.1 |
-| Blockchain | Solana (Devnet) |
-| Frontend | [Next.js](https://nextjs.org/) 15.5 (App Router), React 19 |
-| Styling | [Tailwind CSS](https://tailwindcss.com/) v4 |
-| UI Components | [shadcn/ui](https://ui.shadcn.com/) (Radix primitives) |
-| Wallet | [@solana/wallet-adapter](https://github.com/anza-xyz/wallet-adapter) |
-| State | [Jotai](https://jotai.org/) + [TanStack React Query](https://tanstack.com/query) |
-| Testing | [Vitest](https://vitest.dev/) |
+| Layer          | Technology                                                                       |
+| -------------- | -------------------------------------------------------------------------------- |
+| Smart Contract | Rust, [Anchor](https://www.anchor-lang.com/) 0.32.1                              |
+| Blockchain     | Solana (Devnet)                                                                  |
+| Frontend       | [Next.js](https://nextjs.org/) 15.5 (App Router), React 19                       |
+| Styling        | [Tailwind CSS](https://tailwindcss.com/) v4                                      |
+| UI Components  | [shadcn/ui](https://ui.shadcn.com/) (Radix primitives)                           |
+| Wallet         | [@solana/wallet-adapter](https://github.com/anza-xyz/wallet-adapter)             |
+| State          | [Jotai](https://jotai.org/) + [TanStack React Query](https://tanstack.com/query) |
+| Testing        | [Vitest](https://vitest.dev/)                                                    |
 
 ## Architecture
 
 ### Program Derived Addresses
 
-| PDA | Seeds |
-|-----|-------|
+| PDA   | Seeds                                         |
+| ----- | --------------------------------------------- |
 | Vault | `["vault", sha256(plan_title), owner_pubkey]` |
-| Plan | `["plan", vault_pda_pubkey]` |
+| Plan  | `["plan", vault_pda_pubkey]`                  |
 
 ### Accounts
 
@@ -51,20 +51,20 @@ VaultAccount               Plan
 
 ### Instructions
 
-| Instruction | Description |
-|-------------|-------------|
+| Instruction        | Description                                    |
+| ------------------ | ---------------------------------------------- |
 | `initialize_vault` | Create a new vault and associated plan account |
-| `deposit` | Transfer SOL from owner to vault PDA |
-| `submit_plan` | Populate trading plan details, unlock vault |
-| `withdraw` | Withdraw funds from an unlocked vault |
-| `close_vault` | Close vault and plan accounts, reclaim rent |
+| `deposit`          | Transfer SOL from owner to vault PDA           |
+| `submit_plan`      | Populate trading plan details, unlock vault    |
+| `withdraw`         | Withdraw funds from an unlocked vault          |
+| `close_vault`      | Close vault and plan accounts, reclaim rent    |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Solana CLI 1.18+
-- Anchor 0.31.1
+- Solana CLI 4.0.3+
+- Anchor 0.32.1
 - Node.js 20+
 - pnpm 9+
 
@@ -119,6 +119,10 @@ The test suite covers all five program instructions with both happy and unhappy 
 
 ```bash
 pnpm test:program    # runs tests on local validator
+
+> **Note:** For deployment, the program must be built with `--arch v3` (SBPFv3)
+> because devnet has activated [SIMD-0500](https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0500-disable-deployment-of-sbpf-v0-v1-v2.md).
+> See `anchor_project/README.md` for deployment instructions.
 ```
 
 ## License

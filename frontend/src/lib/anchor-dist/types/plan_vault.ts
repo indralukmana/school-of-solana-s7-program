@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/plan_vault.json`.
  */
 export type PlanVault = {
-  "address": "24L8vhZLcquCPfTuh3HMSVA4FFicEuMTzKunGrvxwFXc",
+  "address": "HoVCutYBhZU7aectEWT6eCXk4M2ttskGF5Y8XSshPw8e",
   "metadata": {
     "name": "planVault",
     "version": "0.1.0",
