@@ -49,19 +49,8 @@ describe("submit-plan", () => {
     expect(storedVault.status).toEqual({ unlocked: {} });
 
     const storedPlan = await program.account.plan.fetch(planPda);
-    expect(storedPlan.planTitle).toEqual(planTitle);
-    expect(storedPlan.ticker).toEqual(args.ticker);
-    expect(storedPlan.investmentAmount.toNumber()).toEqual(
-      args.investmentAmount.toNumber(),
-    );
-    expect(storedPlan.stopLossBps.toNumber()).toEqual(
-      args.stopLossBps.toNumber(),
-    );
-    expect(storedPlan.takeProfitBps.toNumber()).toEqual(
-      args.takeProfitBps.toNumber(),
-    );
-    expect(storedPlan.tradingPlatform).toEqual(args.tradingPlatform);
-    expect(storedPlan.riskLevel).toEqual(args.riskLevel);
+    expect(storedPlan.contentHash).toEqual(args.contentHash);
+    expect(storedPlan.contentUri).toEqual(args.contentUri);
   });
 
   it("Should fail to submit a plan with insufficient funds", async () => {
@@ -107,8 +96,8 @@ describe("submit-plan", () => {
     );
   });
 
-  it("Should fail with long ticker", async () => {
-    const planTitle = "long-ticker-submit";
+  it("Should fail with long content URI", async () => {
+    const planTitle = "long-uri-submit";
     const { vaultPda } = await createAndInitializeVault({
       program,
       ownerKeypair,
@@ -124,7 +113,7 @@ describe("submit-plan", () => {
     });
     await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
-    const args = { ...getDefaultPlanArgs(), ticker: "a".repeat(11) };
+    const args = { ...getDefaultPlanArgs(), contentUri: "https://example.com/" + "a".repeat(200) };
 
     const { tx: submitTx } = await getSubmitPlanTx({
       program,
@@ -134,6 +123,6 @@ describe("submit-plan", () => {
     });
     await expect(
       txSendAndConfirm(program, submitTx, [ownerKeypair]),
-    ).rejects.toThrow(/Input string exceeds max length/);
+    ).rejects.toThrow(/TooLong/);
   });
 });

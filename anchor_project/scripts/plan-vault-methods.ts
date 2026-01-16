@@ -6,12 +6,8 @@ export const VAULT_SEED = 'vault';
 export const PLAN_SEED = 'plan';
 
 export interface SubmitPlanArgs {
-	tradingPlatform: string;
-	riskLevel: string;
-	ticker: string;
-	investmentAmount: BN;
-	stopLossBps: BN;
-	takeProfitBps: BN;
+  contentHash: number[]       // [u8; 32] as number array
+  contentUri: string
 }
 
 export const sha256Bytes = async (input: string): Promise<Uint8Array> => {
@@ -111,31 +107,31 @@ export const getDepositTx = async ({
 };
 
 export const getSubmitPlanTx = async ({
-	program,
-	ownerPublicKey,
-	vaultPda,
-	args,
+  program,
+  ownerPublicKey,
+  vaultPda,
+  args,
 }: {
-	program: Program<PlanVault>;
-	ownerPublicKey: web3.PublicKey;
-	vaultPda: web3.PublicKey;
-  args: SubmitPlanArgs;
+  program: Program<PlanVault>
+  ownerPublicKey: web3.PublicKey
+  vaultPda: web3.PublicKey
+  args: SubmitPlanArgs
 }) => {
-	const { planPda } = getPlanPda({
-		vaultPublicKey: vaultPda,
-		program,
-	});
+  const { planPda } = getPlanPda({
+    vaultPublicKey: vaultPda,
+    program,
+  })
 
-	const tx = await program.methods
-		.submitPlan(args)
-		.accountsPartial({
-			owner: ownerPublicKey,
-			vaultAccount: vaultPda,
-			plan: planPda,
-		})
-		.transaction();
-	return { tx, planPda };
-};
+  const tx = await program.methods
+    .submitPlan(args)
+    .accountsPartial({
+      owner: ownerPublicKey,
+      vaultAccount: vaultPda,
+      plan: planPda,
+    })
+    .transaction()
+  return { tx, planPda }
+}
 
 export const getWithdrawTx = async ({
 	program,

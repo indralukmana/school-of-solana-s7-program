@@ -35,13 +35,8 @@ describe('vault-initialize', () => {
 		
 		const storedPlan = await program.account.plan.fetch(planPda);
 		expect(storedPlan.vaultAccount).toEqual(vaultPda);
-		expect(storedPlan.planTitle).toEqual('');
-		expect(storedPlan.tradingPlatform).toEqual('');
-		expect(storedPlan.riskLevel).toEqual('');
-		expect(storedPlan.ticker).toEqual('');
-		expect(storedPlan.investmentAmount.toNumber()).toEqual(0);
-		expect(storedPlan.stopLossBps.toNumber()).toEqual(0);
-		expect(storedPlan.takeProfitBps.toNumber()).toEqual(0);
+		expect(storedPlan.contentHash).toEqual(new Array(32).fill(0));
+		expect(storedPlan.contentUri).toEqual('');
 	});
 
 	it('Can be initialized with a long title', async () => {

@@ -1,10 +1,10 @@
+import { createHash } from 'crypto'
 import {
   AnchorProvider,
   Program,
   setProvider,
   web3,
   workspace,
-  BN,
 } from "@coral-xyz/anchor";
 import { PlanVault } from "../target/types/plan_vault";
 import { getInitializeVaultTx, ONE_SOL } from "../scripts/plan-vault-methods";
@@ -35,16 +35,21 @@ export const getVaultDefaultValues = () => {
   return { planTitle };
 };
 
-export const getDefaultPlanArgs = () => {
+export const getDefaultPlanArgs = (): { contentHash: number[]; contentUri: string } => {
+  const planContent = JSON.stringify({
+    tradingPlatform: 'Jupiter',
+    riskLevel: 'High',
+    ticker: 'SOL',
+    investmentLamports: ONE_SOL,
+    stopLossBps: 500,
+    takeProfitBps: 1000,
+  })
+  const hash = createHash('sha256').update(planContent).digest()
   return {
-    tradingPlatform: "Jupiter",
-    riskLevel: "High",
-    ticker: "SOL",
-    investmentAmount: new BN(ONE_SOL),
-    stopLossBps: new BN(500),
-    takeProfitBps: new BN(1000),
-  };
-};
+    contentHash: Array.from(hash),
+    contentUri: 'https://api.planvault.xyz/plans/' + hash.toString('hex'),
+  }
+}
 
 export const getProgram = async () => {
   // Configure the client to use the local cluster.
