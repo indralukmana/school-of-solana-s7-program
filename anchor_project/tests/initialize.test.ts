@@ -1,141 +1,141 @@
-import { Program, web3 } from '@coral-xyz/anchor';
+import { Program, web3 } from "@coral-xyz/anchor";
 import {
-	getProgram,
-	getVaultDefaultValues,
-	createAndInitializeVault,
-} from './test-helpers';
-import { PlanVault } from '../target/types/plan_vault';
-import { describe, it, expect, beforeAll } from 'vitest';
+  getProgram,
+  getVaultDefaultValues,
+  createAndInitializeVault,
+} from "./test-helpers";
+import { PlanVault } from "../target/types/plan_vault";
+import { describe, it, expect, beforeAll } from "vitest";
 
-describe('vault-initialize', () => {
-	let program: Program<PlanVault>;
-	let ownerKeypair: web3.Keypair;
-	const { planTitle } = getVaultDefaultValues();
+describe("vault-initialize", () => {
+  let program: Program<PlanVault>;
+  let ownerKeypair: web3.Keypair;
+  const { planTitle } = getVaultDefaultValues();
 
-	beforeAll(async () => {
-		const initializedProgram = await getProgram();
-		program = initializedProgram.program;
-		ownerKeypair = initializedProgram.wallets.ownerKeypair;
-	});
+  beforeAll(async () => {
+    const initializedProgram = await getProgram();
+    program = initializedProgram.program;
+    ownerKeypair = initializedProgram.wallets.ownerKeypair;
+  });
 
-	it('Can be initialized successfully!', async () => {
-		const { vaultPda, planPda, hashedTitle } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Can be initialized successfully!", async () => {
+    const { vaultPda, planPda, hashedTitle } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-		const storedVault = await program.account.vaultAccount.fetch(vaultPda);
+    const storedVault = await program.account.vaultAccount.fetch(vaultPda);
 
-		expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
-		expect(storedVault.owner).toEqual(ownerKeypair.publicKey);
-		expect(storedVault.status).toEqual({ locked: {} });
-		expect(storedVault.tokenVault).toEqual(web3.PublicKey.default);
-		expect(storedVault.planTitle).toEqual(planTitle);
-		
-		const storedPlan = await program.account.plan.fetch(planPda);
-		expect(storedPlan.vaultAccount).toEqual(vaultPda);
-		expect(storedPlan.contentHash).toEqual(new Array(32).fill(0));
-		expect(storedPlan.contentUri).toEqual('');
-	});
+    expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
+    expect(storedVault.owner).toEqual(ownerKeypair.publicKey);
+    expect(storedVault.status).toEqual({ locked: {} });
+    expect(storedVault.tokenVault).toEqual(web3.PublicKey.default);
+    expect(storedVault.planTitle).toEqual(planTitle);
 
-	it('Can be initialized with a long title', async () => {
-		const longTitle = 'a'.repeat(101);
-		const { vaultPda, hashedTitle } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle: longTitle,
-		});
+    const storedPlan = await program.account.plan.fetch(planPda);
+    expect(storedPlan.vaultAccount).toEqual(vaultPda);
+    expect(storedPlan.contentHash).toEqual(new Array(32).fill(0));
+    expect(storedPlan.contentUri).toEqual("");
+  });
 
-		const storedVault = await program.account.vaultAccount.fetch(vaultPda);
+  it("Can be initialized with a long title", async () => {
+    const longTitle = "a".repeat(101);
+    const { vaultPda, hashedTitle } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle: longTitle,
+    });
 
-		expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
-	});
+    const storedVault = await program.account.vaultAccount.fetch(vaultPda);
 
-	it('Can be initialized with a short three letter title', async () => {
-		const shortTitle = 'aaa';
-		const { vaultPda, hashedTitle } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle: shortTitle,
-		});
+    expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
+  });
 
-		const storedVault = await program.account.vaultAccount.fetch(vaultPda);
+  it("Can be initialized with a short three letter title", async () => {
+    const shortTitle = "aaa";
+    const { vaultPda, hashedTitle } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle: shortTitle,
+    });
 
-		expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
-	});
+    const storedVault = await program.account.vaultAccount.fetch(vaultPda);
 
-	it('Cannot be initialized with empty title', async () => {
-		const shortTitle = '';
-		await expect(
-			createAndInitializeVault({
-				program,
-				ownerKeypair,
-				planTitle: shortTitle,
-			}),
-		).rejects.toThrow(/Title must be at least 3 characters/);
-	});
+    expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
+  });
 
-	it('Cannot be initialized with single letter title', async () => {
-		const shortTitle = 'a';
-		await expect(
-			createAndInitializeVault({
-				program,
-				ownerKeypair,
-				planTitle: shortTitle,
-			}),
-		).rejects.toThrow(/Title must be at least 3 characters/);
-	});
+  it("Cannot be initialized with empty title", async () => {
+    const shortTitle = "";
+    await expect(
+      createAndInitializeVault({
+        program,
+        ownerKeypair,
+        planTitle: shortTitle,
+      }),
+    ).rejects.toThrow(/Title must be at least 3 characters/);
+  });
 
-	it('Should fail when the vault is already initialized', async () => {
-		const planTitle = 'duplicate-title';
-		await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle,
-		});
+  it("Cannot be initialized with single letter title", async () => {
+    const shortTitle = "a";
+    await expect(
+      createAndInitializeVault({
+        program,
+        ownerKeypair,
+        planTitle: shortTitle,
+      }),
+    ).rejects.toThrow(/Title must be at least 3 characters/);
+  });
 
-		await expect(
-			createAndInitializeVault({
-				program,
-				ownerKeypair,
-				planTitle,
-			}),
-		).rejects.toThrow(/already in use/);
-	});
+  it("Should fail when the vault is already initialized", async () => {
+    const planTitle = "duplicate-title";
+    await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
 
-	it('Can be initialized with a 200-character title', async () => {
-		const longTitle = 'a'.repeat(200);
-		const { vaultPda, hashedTitle } = await createAndInitializeVault({
-			program,
-			ownerKeypair,
-			planTitle: longTitle,
-		});
+    await expect(
+      createAndInitializeVault({
+        program,
+        ownerKeypair,
+        planTitle,
+      }),
+    ).rejects.toThrow(/already in use/);
+  });
 
-		const storedVault = await program.account.vaultAccount.fetch(vaultPda);
+  it("Can be initialized with a 200-character title", async () => {
+    const longTitle = "a".repeat(200);
+    const { vaultPda, hashedTitle } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle: longTitle,
+    });
 
-		expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
-	});
+    const storedVault = await program.account.vaultAccount.fetch(vaultPda);
 
-	it('Cannot be initialized with a title longer than 200 characters', async () => {
-		const longTitle = 'a'.repeat(201);
-		await expect(
-			createAndInitializeVault({
-				program,
-				ownerKeypair,
-				planTitle: longTitle,
-			}),
-		).rejects.toThrow(/Title must not exceed 200 characters/);
-	});
+    expect(storedVault.planTitleHash).toEqual(Array.from(hashedTitle));
+  });
 
-	it('Cannot be initialized with a title shorter than 3 characters', async () => {
-		const shortTitle = 'aa';
-		await expect(
-			createAndInitializeVault({
-				program,
-				ownerKeypair,
-				planTitle: shortTitle,
-			}),
-		).rejects.toThrow(/Title must be at least 3 characters/);
-	});
+  it("Cannot be initialized with a title longer than 200 characters", async () => {
+    const longTitle = "a".repeat(201);
+    await expect(
+      createAndInitializeVault({
+        program,
+        ownerKeypair,
+        planTitle: longTitle,
+      }),
+    ).rejects.toThrow(/Title must not exceed 200 characters/);
+  });
+
+  it("Cannot be initialized with a title shorter than 3 characters", async () => {
+    const shortTitle = "aa";
+    await expect(
+      createAndInitializeVault({
+        program,
+        ownerKeypair,
+        planTitle: shortTitle,
+      }),
+    ).rejects.toThrow(/Title must be at least 3 characters/);
+  });
 });

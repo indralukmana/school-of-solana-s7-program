@@ -113,7 +113,10 @@ describe("submit-plan", () => {
     });
     await txSendAndConfirm(program, depositTx, [ownerKeypair]);
 
-    const args = { ...getDefaultPlanArgs(), contentUri: "https://example.com/" + "a".repeat(200) };
+    const args = {
+      ...getDefaultPlanArgs(),
+      contentUri: "https://example.com/" + "a".repeat(200),
+    };
 
     const { tx: submitTx } = await getSubmitPlanTx({
       program,
