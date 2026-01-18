@@ -51,6 +51,7 @@ describe("submit-plan", () => {
     const storedPlan = await program.account.plan.fetch(planPda);
     expect(storedPlan.contentHash).toEqual(args.contentHash);
     expect(storedPlan.contentUri).toEqual(args.contentUri);
+    expect(storedPlan.vaultAccount.toBase58()).toEqual(vaultPda.toBase58());
   });
 
   it("Should fail to submit a plan with insufficient funds", async () => {

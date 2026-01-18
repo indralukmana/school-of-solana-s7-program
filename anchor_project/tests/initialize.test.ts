@@ -34,8 +34,9 @@ describe("vault-initialize", () => {
     expect(storedVault.planTitle).toEqual(planTitle);
 
     const storedPlan = await program.account.plan.fetch(planPda);
-    expect(storedPlan.vaultAccount).toEqual(vaultPda);
-    expect(storedPlan.contentHash).toEqual(new Array(32).fill(0));
+    expect(storedPlan.vaultAccount.toBase58()).toEqual(vaultPda.toBase58());
+    // content_hash and content_uri should be zero/default
+    expect(storedPlan.contentHash.every((b: number) => b === 0)).toBe(true);
     expect(storedPlan.contentUri).toEqual("");
   });
 
