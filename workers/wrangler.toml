@@ -1,0 +1,16 @@
+name = "plan-vault-api"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "plan-vault-db"
+database_id = ""
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "plan-vault-images"
+
+[vars]
+JWT_SECRET = "replace-with-generated-secret"
+CORS_ORIGIN = "http://localhost:3000"
