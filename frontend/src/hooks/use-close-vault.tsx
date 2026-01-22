@@ -6,6 +6,7 @@ import { useTransactionToast } from '@/components/use-transaction-toast'
 import { PublicKey } from '@solana/web3.js'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { postEvent } from '@/lib/api-client'
 
 export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | null) {
   const { publicKey } = useWallet()
@@ -23,17 +24,19 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
 
       return program.methods
         .closeVault()
-        .accountsPartial({
-          vaultAccount: vaultAddress,
-          owner: publicKey,
-          plan: planAddress,
-        })
+        .accountsPartial({ vaultAccount: vaultAddress, owner: publicKey, plan: planAddress })
         .rpc()
     },
     onSuccess: (signature) => {
       transactionToast(signature)
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
       router.push('/account')
+      postEvent({
+        eventType: 'vault_closed',
+        actorId: publicKey!.toBase58(),
+        vaultAddress: vaultAddress.toBase58(),
+        signature,
+      }).catch(() => {})
     },
     onError: (error: Error) => {
       toast.error(error.message)

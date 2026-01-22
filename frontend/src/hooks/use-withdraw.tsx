@@ -5,6 +5,7 @@ import { getPlanVaultProgram } from '@/lib/plan-vault-program'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { PublicKey } from '@solana/web3.js'
 import { toast } from 'sonner'
+import { postEvent } from '@/lib/api-client'
 
 export function useWithdraw(vaultAddress: PublicKey) {
   const { publicKey } = useWallet()
@@ -17,12 +18,17 @@ export function useWithdraw(vaultAddress: PublicKey) {
     mutationKey: ['withdraw', { publicKey, vaultAddress }],
     mutationFn: async () => {
       if (!publicKey) throw new Error('Wallet not connected')
-
       return program.methods.withdraw().accountsPartial({ vaultAccount: vaultAddress, owner: publicKey }).rpc()
     },
     onSuccess: (signature) => {
       transactionToast(signature)
-      return queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
+      queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
+      postEvent({
+        eventType: 'withdraw_completed',
+        actorId: publicKey!.toBase58(),
+        vaultAddress: vaultAddress.toBase58(),
+        signature,
+      }).catch(() => {})
     },
     onError: (error: Error) => {
       toast.error(error.message)

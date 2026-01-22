@@ -120,13 +120,13 @@ export default function VaultDetailFeature() {
               </Card>
             )}
 
-            {isLocked && !getPlan.data?.planTitle && vaultBalance > 0 && (
+            {isLocked && getPlan.data && getPlan.data.contentHash.every((b: number) => b === 0) && vaultBalance > 0 && (
               <Card className="bg-white/[0.04] border-white/[0.08]">
                 <CardHeader>
                   <CardTitle>Submit Trading Plan</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <PlanForm vaultAddress={vaultAddress} planPda={planPda} />
+                  <PlanForm vaultAddress={vaultAddress} planPda={planPda} vaultTitle={vault.planTitle} />
                 </CardContent>
               </Card>
             )}

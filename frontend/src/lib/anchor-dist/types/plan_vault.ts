@@ -307,32 +307,17 @@ export type PlanVault = {
             "type": "pubkey"
           },
           {
-            "name": "planTitle",
+            "name": "contentHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "contentUri",
             "type": "string"
-          },
-          {
-            "name": "tradingPlatform",
-            "type": "string"
-          },
-          {
-            "name": "riskLevel",
-            "type": "string"
-          },
-          {
-            "name": "ticker",
-            "type": "string"
-          },
-          {
-            "name": "investmentAmount",
-            "type": "u64"
-          },
-          {
-            "name": "stopLossBps",
-            "type": "u64"
-          },
-          {
-            "name": "takeProfitBps",
-            "type": "u64"
           }
         ]
       }
@@ -343,28 +328,17 @@ export type PlanVault = {
         "kind": "struct",
         "fields": [
           {
-            "name": "tradingPlatform",
+            "name": "contentHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "contentUri",
             "type": "string"
-          },
-          {
-            "name": "riskLevel",
-            "type": "string"
-          },
-          {
-            "name": "ticker",
-            "type": "string"
-          },
-          {
-            "name": "investmentAmount",
-            "type": "u64"
-          },
-          {
-            "name": "stopLossBps",
-            "type": "u64"
-          },
-          {
-            "name": "takeProfitBps",
-            "type": "u64"
           }
         ]
       }

@@ -301,32 +301,17 @@
             "type": "pubkey"
           },
           {
-            "name": "plan_title",
+            "name": "content_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "content_uri",
             "type": "string"
-          },
-          {
-            "name": "trading_platform",
-            "type": "string"
-          },
-          {
-            "name": "risk_level",
-            "type": "string"
-          },
-          {
-            "name": "ticker",
-            "type": "string"
-          },
-          {
-            "name": "investment_amount",
-            "type": "u64"
-          },
-          {
-            "name": "stop_loss_bps",
-            "type": "u64"
-          },
-          {
-            "name": "take_profit_bps",
-            "type": "u64"
           }
         ]
       }
@@ -337,28 +322,17 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "trading_platform",
+            "name": "content_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "content_uri",
             "type": "string"
-          },
-          {
-            "name": "risk_level",
-            "type": "string"
-          },
-          {
-            "name": "ticker",
-            "type": "string"
-          },
-          {
-            "name": "investment_amount",
-            "type": "u64"
-          },
-          {
-            "name": "stop_loss_bps",
-            "type": "u64"
-          },
-          {
-            "name": "take_profit_bps",
-            "type": "u64"
           }
         ]
       }
