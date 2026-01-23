@@ -77,7 +77,6 @@ export function useTransferSol({ address }: { address: PublicKey }) {
 
         return signature
       } catch (error: unknown) {
-
         return
       }
     },
@@ -94,8 +93,7 @@ export function useTransferSol({ address }: { address: PublicKey }) {
         }),
       ])
     },
-    onError: (_error) => {
-    },
+    onError: (_error) => {},
   })
 }
 

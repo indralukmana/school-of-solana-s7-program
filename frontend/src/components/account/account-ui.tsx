@@ -111,7 +111,11 @@ export function AccountTokens({ address }: { address: PublicKey }) {
           </div>
         </div>
       </div>
-      {query.isError && <div className="rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">Error: {query.error?.message.toString()}</div>}
+      {query.isError && (
+        <div className="rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+          Error: {query.error?.message.toString()}
+        </div>
+      )}
       {query.isSuccess && (
         <div>
           {query.data.length === 0 ? (
@@ -192,7 +196,11 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
           )}
         </div>
       </div>
-      {query.isError && <div className="rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">Error: {query.error?.message.toString()}</div>}
+      {query.isError && (
+        <div className="rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+          Error: {query.error?.message.toString()}
+        </div>
+      )}
       {query.isSuccess && (
         <div>
           {query.data.length === 0 ? (

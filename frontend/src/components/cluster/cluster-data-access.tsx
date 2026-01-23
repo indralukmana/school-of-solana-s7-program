@@ -79,8 +79,7 @@ export function ClusterProvider({ children }: { children: ReactNode }) {
       try {
         new Connection(cluster.endpoint)
         setClusters([...clusters, cluster])
-      } catch (_err) {
-      }
+      } catch (_err) {}
     },
     deleteCluster: (cluster: SolanaCluster) => {
       setClusters(clusters.filter((item) => item.name !== cluster.name))

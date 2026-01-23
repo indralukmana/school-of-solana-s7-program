@@ -9,6 +9,7 @@ import {
 import { handlePostOutcome, handleGetOutcomes } from './routes/outcomes'
 import { handleGetUser, handlePutUser } from './routes/users'
 import { handleGetActivity, handlePostEvent } from './routes/activity'
+import { handleCron } from './cron-handler'
 
 interface Env {
   DB: D1Database
@@ -68,3 +69,4 @@ router.all('*', () =>
 )
 
 export default router
+export { handleCron as scheduled }
