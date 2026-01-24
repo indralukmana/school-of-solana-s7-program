@@ -81,6 +81,7 @@ export async function handleAuthNonce(request: Request, db: D1Database): Promise
     .nonce(nonce)
     .issuedAt(new Date())
     .statement('Sign in to Plan Vault')
+    .cluster('devnet')
     .build()
 
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString()

@@ -9,6 +9,7 @@ import {
 import { handlePostOutcome, handleGetOutcomes } from './routes/outcomes'
 import { handleGetUser, handlePutUser } from './routes/users'
 import { handleGetActivity, handlePostEvent } from './routes/activity'
+import { handlePostUploadUrls } from './routes/images'
 import { handleCron } from './cron-handler'
 
 interface Env {
@@ -53,6 +54,23 @@ router.put('/api/users/me', (req, env) => handlePutUser(req, env))
 // Activity
 router.get('/api/activity', (req, env) => handleGetActivity(req, env))
 router.post('/api/events', (req, env) => handlePostEvent(req, env))
+
+// Images
+router.post('/api/images/upload-urls', (req, env) => handlePostUploadUrls(req, env))
+
+// Serve R2 images
+router.get('/images/*', async (req, env) => {
+  const url = new URL(req.url)
+  const key = url.pathname.replace('/images/', '')
+  const object = await env.IMAGES.get(key)
+  if (!object) return new Response('Not found', { status: 404 })
+  return new Response(object.body, {
+    headers: {
+      'Content-Type': object.httpMetadata?.contentType ?? 'application/octet-stream',
+      'Cache-Control': 'public, max-age=31536000',
+    },
+  })
+})
 
 // Health check
 router.get('/api/health', () =>

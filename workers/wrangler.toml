@@ -5,7 +5,7 @@ compatibility_date = "2025-06-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "plan-vault-db"
-database_id = ""
+database_id = "d0394760-014b-4585-b826-f4316e3ec82d"
 
 [[r2_buckets]]
 binding = "IMAGES"
@@ -13,4 +13,4 @@ bucket_name = "plan-vault-images"
 
 [vars]
 JWT_SECRET = "replace-with-generated-secret"
-CORS_ORIGIN = "http://localhost:3000"
+CORS_ORIGIN = "https://plan-vault-ackee-program-task.vercel.app"
