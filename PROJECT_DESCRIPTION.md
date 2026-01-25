@@ -35,9 +35,14 @@ disciplined approach to trading.
 
 ## Program Architecture
 
-The program is built around the concept of a vault that holds funds until a
-trading plan is submitted. It uses PDAs to create unique accounts for each vault
-and plan.
+Plan Vault uses a **hybrid web2/web3 architecture**. The on-chain Solana program handles
+trustless vault locking/unlocking and SOL custody. Rich plan content, trade outcomes,
+user profiles, and activity feeds live in a Cloudflare Workers API backed by D1 (SQLite) and R2 (object storage).
+
+| Layer | Technology | Stores |
+|-------|-----------|--------|
+| On-chain | Solana Anchor Program | Vault (owner, status, SOL), Plan (content_hash, content_uri) |
+| Off-chain | Cloudflare Workers + D1 + R2 | Rich plan content, outcomes, user profiles, activity, images |
 
 ### PDA Usage
 
@@ -47,7 +52,7 @@ and plan.
   `["vault", sha256(plan_title), user_wallet_pubkey]`. This ensures that each
   user has a unique vault for each trading plan title.
 - **Plan PDA**: Derived from the seeds `["plan", vault_pda_pubkey]`. This links
-  a specific plan to a vault.
+  a specific plan to a vault. Stores only a `content_hash` (SHA-256 of off-chain plan JSON) and `content_uri` (API lookup URL).
 
 ### Program Instructions
 
@@ -56,8 +61,7 @@ and plan.
 - `initialize_vault`: Creates a new vault account and an associated empty plan
   account for a user, identified by a plan title.
 - `deposit`: Allows the user to deposit SOL into their vault.
-- `submit_plan`: Populates the details for the trading plan and unlocks the
-  vault for withdrawal.
+- `submit_plan`: Stores the content hash + URI on-chain and unlocks the vault for withdrawal.
 - `withdraw`: Allows the user to withdraw the unlocked funds from the vault.
 - `close_vault`: Closes the vault and its associated plan account, returning any
   rent-exempt lamports to the owner.
@@ -72,21 +76,21 @@ pub struct VaultAccount {
     pub token_vault: Pubkey,
     pub plan_title_hash: [u8; 32],
     pub plan_title: String,
-    pub plan: Plan,
 }
 
 #[account]
 pub struct Plan {
     pub vault_account: Pubkey,
-    pub plan_title: String,
-    pub trading_platform: String,
-    pub risk_level: String,
-    pub ticker: String,
-    pub investment_amount: u64,
-    pub stop_loss: f64,
-    pub take_profit: f64,
+    pub content_hash: [u8; 32],  // SHA-256 of off-chain plan JSON
+    pub content_uri: String,     // API lookup URL for the full plan
 }
 ```
+
+### API & Database
+
+A Cloudflare Workers API serves plan content, trade outcomes, activity feeds, and user profiles.
+See [API.md](./API.md) for endpoint reference, [DEPLOYMENT.md](./DEPLOYMENT.md) for setup,
+and [CONTEXT.md](./CONTEXT.md) for the full domain glossary and data flow.
 
 ## Testing
 
