@@ -10,6 +10,7 @@ import { handlePostOutcome, handleGetOutcomes } from './routes/outcomes'
 import { handleGetUser, handlePutUser } from './routes/users'
 import { handleGetActivity, handlePostEvent } from './routes/activity'
 import { handlePostUploadUrls } from './routes/images'
+import { handleGetAnalytics } from './routes/analytics'
 import { handleCron } from './cron-handler'
 
 interface Env {
@@ -46,6 +47,9 @@ router.get('/api/plans', (req, env) => handleGetPlans(req, env))
 // Outcomes
 router.post('/api/plans/:hash/outcomes', (req, env) => handlePostOutcome(req, env))
 router.get('/api/plans/:hash/outcomes', (req, env) => handleGetOutcomes(req, env))
+
+// Analytics
+router.get('/api/analytics', (req, env) => handleGetAnalytics(req, env))
 
 // Users
 router.get('/api/users/:address', (req, env) => handleGetUser(req, env))
