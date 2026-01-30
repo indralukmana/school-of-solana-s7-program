@@ -6,7 +6,7 @@ import {
   handleGetPlan,
   handleGetPlans,
 } from './routes/plans'
-import { handlePostOutcome, handleGetOutcomes } from './routes/outcomes'
+import { handlePostOutcome, handleGetOutcomes, handleGetOutcomesByOwner } from './routes/outcomes'
 import { handleGetUser, handlePutUser } from './routes/users'
 import { handleGetActivity, handlePostEvent } from './routes/activity'
 import { handlePostUploadUrls } from './routes/images'
@@ -47,6 +47,7 @@ router.get('/api/plans', (req, env) => handleGetPlans(req, env))
 // Outcomes
 router.post('/api/plans/:hash/outcomes', (req, env) => handlePostOutcome(req, env))
 router.get('/api/plans/:hash/outcomes', (req, env) => handleGetOutcomes(req, env))
+router.get('/api/outcomes', (req, env) => handleGetOutcomesByOwner(req, env))
 
 // Analytics
 router.get('/api/analytics', (req, env) => handleGetAnalytics(req, env))

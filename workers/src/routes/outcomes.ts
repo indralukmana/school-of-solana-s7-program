@@ -71,3 +71,42 @@ export async function handleGetOutcomes(
     headers: { 'Content-Type': 'application/json' },
   })
 }
+
+export async function handleGetOutcomesByOwner(
+  request: IRequest,
+  env: { DB: D1Database },
+): Promise<Response> {
+  const url = new URL(request.url)
+  const owner = url.searchParams.get('owner')
+  if (!owner) {
+    return new Response(JSON.stringify({ error: 'owner query param required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50)
+  const before = url.searchParams.get('before')
+
+  let query = `SELECT o.*, p.title AS plan_title, p.ticker
+     FROM outcomes o
+     JOIN plans p ON o.plan_id = p.id
+     WHERE p.owner_id = ?`
+  const params: unknown[] = [owner]
+
+  if (before) {
+    query += ' AND o.created_at < ?'
+    params.push(before)
+  }
+
+  query += ' ORDER BY o.created_at DESC LIMIT ?'
+  params.push(limit)
+
+  const { results } = await env.DB.prepare(query)
+    .bind(...params)
+    .all()
+
+  return new Response(JSON.stringify(results), {
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
