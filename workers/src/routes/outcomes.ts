@@ -85,7 +85,7 @@ export async function handleGetOutcomesByOwner(
     })
   }
 
-  const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50)
+  const limit = Math.min(parseInt(url.searchParams.get('limit') ?? '', 10) || 20, 50)
   const before = url.searchParams.get('before')
 
   let query = `SELECT o.*, p.title AS plan_title, p.ticker
