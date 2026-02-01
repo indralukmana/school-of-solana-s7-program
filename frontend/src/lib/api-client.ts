@@ -121,6 +121,33 @@ export async function getOutcomes(planHash: string) {
   return apiFetch<Outcome[]>(`/api/plans/${planHash}/outcomes`)
 }
 
+// Analytics
+export interface AnalyticsResponse {
+  totalPnlLamports: number
+  profitFactor: number | null
+  winRate: number
+  totalOutcomes: number
+  outcomeMonths: Array<{ month: string; pnlLamports: number; count: number }>
+  tickerStats: Array<{ ticker: string; pnlLamports: number; count: number }>
+}
+
+export async function getAnalytics(owner: string) {
+  return apiFetch<AnalyticsResponse>(`/api/analytics?owner=${owner}`)
+}
+
+// Outcomes by owner (for analytics drill-down)
+export interface UserOutcome extends Outcome {
+  planTitle: string
+  ticker: string
+}
+
+export async function getOutcomesByOwner(owner: string, limit?: number, before?: string) {
+  const params = new URLSearchParams({ owner })
+  if (limit) params.set('limit', limit.toString())
+  if (before) params.set('before', before)
+  return apiFetch<UserOutcome[]>(`/api/outcomes?${params.toString()}`)
+}
+
 // Activity
 export interface ActivityEvent {
   id: string
