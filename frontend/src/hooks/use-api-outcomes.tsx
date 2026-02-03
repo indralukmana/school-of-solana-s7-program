@@ -13,7 +13,7 @@ export function useApiOutcomes(planHash: string | null) {
 }
 
 export function useApiOutcomesByOwner(owner: string | null, limit?: number) {
-  return useQuery({
+  return useQuery<UserOutcome[]>({
     queryKey: ['api-outcomes', 'owner', owner],
     queryFn: () => getOutcomesByOwner(owner!, limit),
     enabled: !!owner,
