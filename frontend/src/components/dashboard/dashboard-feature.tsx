@@ -2,6 +2,7 @@
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useState } from 'react'
+import { PerformanceCards } from './performance-cards'
 import Link from 'next/link'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { AppHero } from '../app-hero'
@@ -82,6 +83,8 @@ export function DashboardFeature() {
                 </Card>
               ))}
         </div>
+
+        {publicKey && <PerformanceCards owner={publicKey.toBase58()} />}
 
         <Card className="bg-white/[0.04] border-white/[0.08]">
           <CardHeader>
