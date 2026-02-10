@@ -51,5 +51,5 @@ function formatMonth(monthStr: string): string {
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ]
-  return `${months[parseInt(m) - 1]} ${y}`
+  return `${months[parseInt(m, 10) - 1]} ${y}`
 }

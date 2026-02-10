@@ -139,6 +139,7 @@ export async function getAnalytics(owner: string) {
 export interface UserOutcome extends Outcome {
   planTitle: string
   ticker: string
+  vaultAddress: string
 }
 
 export async function getOutcomesByOwner(owner: string, limit?: number, before?: string) {

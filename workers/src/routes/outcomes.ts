@@ -88,7 +88,7 @@ export async function handleGetOutcomesByOwner(
   const limit = Math.min(parseInt(url.searchParams.get('limit') ?? '', 10) || 20, 50)
   const before = url.searchParams.get('before')
 
-  let query = `SELECT o.*, p.title AS plan_title, p.ticker
+  let query = `SELECT o.*, p.title AS plan_title, p.ticker, p.vault_address AS vault_address
      FROM outcomes o
      JOIN plans p ON o.plan_id = p.id
      WHERE p.owner_id = ?`

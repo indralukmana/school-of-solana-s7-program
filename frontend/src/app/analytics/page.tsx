@@ -1,6 +1,8 @@
 'use client'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import { AppHero } from '@/components/app-hero'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -37,8 +39,25 @@ export default function AnalyticsPage() {
 }
 
 function AnalyticsSection({ owner }: { owner: string }) {
-  const { data, isLoading } = useApiAnalytics(owner)
+  const { data, isLoading, isError, refetch } = useApiAnalytics(owner)
   const { data: outcomes, isLoading: outcomesLoading } = useApiOutcomesByOwner(owner, 50)
+
+  if (isError) {
+    return (
+      <Card className="bg-white/[0.04] border-white/[0.08]">
+        <CardContent className="pt-12 pb-12 text-center">
+          <p className="text-2xl mb-2">⚠️</p>
+          <p className="text-lg font-semibold mb-1">Failed to load analytics</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            The analytics service is temporarily unavailable.
+          </p>
+          <Button variant="outline" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -65,9 +84,12 @@ function AnalyticsSection({ owner }: { owner: string }) {
         <CardContent className="pt-12 pb-12 text-center">
           <p className="text-2xl mb-2">📊</p>
           <p className="text-lg font-semibold mb-1">No trading data yet</p>
-          <p className="text-sm text-muted-foreground">
-            Complete a trade by submitting outcomes to see your analytics here.
+          <p className="text-sm text-muted-foreground mb-4">
+            Start trading to see analytics.
           </p>
+          <Button variant="outline" asChild>
+            <Link href="/vaults">Go to Vaults</Link>
+          </Button>
         </CardContent>
       </Card>
     )
