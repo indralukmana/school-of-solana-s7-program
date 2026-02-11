@@ -1,4 +1,6 @@
-import { SiwsMessageBuilder, generateNonce, verifySignature } from '@siws/core'
+import { SiwsMessage, SiwsMessageBuilder, generateNonce } from '@siws/core'
+import { ed25519 } from '@noble/curves/ed25519.js'
+import bs58 from 'bs58'
 
 export interface JwtPayload {
   sub: string
@@ -105,13 +107,30 @@ export async function handleAuthVerify(
     signature: string
   }
 
-  const result = await verifySignature(message, signature, address, {
-    domain: new URL(request.url).hostname,
-  })
-  if (!result.success)
+  const sigBytes = bs58.decode(signature)
+  if (sigBytes.length !== 64)
+    return new Response(JSON.stringify({ error: 'Invalid signature length' }), { status: 401 })
+
+  const pubkeyBytes = bs58.decode(address)
+  if (pubkeyBytes.length !== 32)
+    return new Response(JSON.stringify({ error: 'Invalid address' }), { status: 401 })
+
+  const messageBytes = new TextEncoder().encode(message)
+  let isValid: boolean
+  try {
+    isValid = ed25519.verify(sigBytes, messageBytes, pubkeyBytes)
+  } catch {
+    isValid = false
+  }
+  if (!isValid)
     return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401 })
 
-  const nonce = result.data!.nonce
+  let nonce: string
+  try {
+    nonce = SiwsMessage.parse(message).nonce
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid message format' }), { status: 401 })
+  }
   const stored = await env.DB.prepare(
     "SELECT nonce FROM auth_nonces WHERE nonce = ? AND address = ? AND expires_at > datetime('now')",
   )
@@ -121,6 +140,8 @@ export async function handleAuthVerify(
     return new Response(JSON.stringify({ error: 'Nonce expired' }), { status: 401 })
 
   await env.DB.prepare('DELETE FROM auth_nonces WHERE nonce = ?').bind(nonce).run()
+
+  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(address).run()
 
   const thirtyMinutes = 30 * 60
   const payload: JwtPayload = {

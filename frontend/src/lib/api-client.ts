@@ -6,6 +6,10 @@ export function setToken(token: string | null) {
   cachedToken = token
 }
 
+export function clearToken() {
+  cachedToken = null
+}
+
 export function getToken(): string | null {
   return cachedToken
 }
@@ -79,6 +83,10 @@ export async function confirmPlan(planHash: string, signature: string) {
   })
 }
 
+export async function cancelPlan(planHash: string) {
+  return apiFetch<{ ok: boolean }>(`/api/plans/${planHash}/cancel`, { method: 'POST' })
+}
+
 export async function getPlan(planHash: string) {
   return apiFetch<PlanRecord>(`/api/plans/${planHash}`)
 }
@@ -127,6 +135,7 @@ export interface AnalyticsResponse {
   profitFactor: number | null
   winRate: number
   totalOutcomes: number
+  cancelledCount: number
   outcomeMonths: Array<{ month: string; pnlLamports: number; count: number }>
   tickerStats: Array<{ ticker: string; pnlLamports: number; count: number }>
 }
