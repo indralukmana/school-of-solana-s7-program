@@ -46,12 +46,49 @@ describe("submit-plan", () => {
     await txSendAndConfirm(program, submitTx, [ownerKeypair]);
 
     const storedVault = await program.account.vaultAccount.fetch(vaultPda);
-    expect(storedVault.status).toEqual({ unlocked: {} });
+    expect(storedVault.status).toEqual({ locked: {} });
 
     const storedPlan = await program.account.plan.fetch(planPda);
     expect(storedPlan.contentHash).toEqual(args.contentHash);
     expect(storedPlan.contentUri).toEqual(args.contentUri);
     expect(storedPlan.vaultAccount.toBase58()).toEqual(vaultPda.toBase58());
+  });
+
+  it("Should reject duplicate plan submission", async () => {
+    const planTitle = "duplicate-submit";
+    const { vaultPda } = await createAndInitializeVault({
+      program,
+      ownerKeypair,
+      planTitle,
+    });
+
+    const depositAmount = new BN(web3.LAMPORTS_PER_SOL);
+    const { tx: depositTx } = await getDepositTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      amount: depositAmount,
+    });
+    await txSendAndConfirm(program, depositTx, [ownerKeypair]);
+
+    const args = getDefaultPlanArgs();
+    const { tx: submitTx, planPda } = await getSubmitPlanTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      args,
+    });
+    await txSendAndConfirm(program, submitTx, [ownerKeypair]);
+
+    const { tx: secondSubmitTx } = await getSubmitPlanTx({
+      program,
+      ownerPublicKey: ownerKeypair.publicKey,
+      vaultPda,
+      args,
+    });
+    await expect(
+      txSendAndConfirm(program, secondSubmitTx, [ownerKeypair]),
+    ).rejects.toThrow(/PlanAlreadySubmitted/);
   });
 
   it("Should fail to submit a plan with insufficient funds", async () => {

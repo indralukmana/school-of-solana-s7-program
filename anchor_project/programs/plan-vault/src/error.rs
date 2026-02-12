@@ -20,4 +20,6 @@ pub enum PlanVaultError {
     InsufficientVaultFunds,
     #[msg("Input string exceeds max length")]
     TooLong,
+    #[msg("Plan already submitted for this vault")]
+    PlanAlreadySubmitted,
 }

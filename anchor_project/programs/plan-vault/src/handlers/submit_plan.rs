@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 use crate::{
     error::PlanVaultError,
-    state::{Plan, VaultAccount, VaultStatus},
+    state::{Plan, VaultAccount},
 };
 
 #[derive(Accounts)]
@@ -37,14 +37,12 @@ pub fn submit_plan_handler(ctx: Context<SubmitPlan>, args: PlanArgs) -> Result<(
         PlanVaultError::InsufficientVaultFunds
     );
 
-    require!(
-        !matches!(vault.status, VaultStatus::Unlocked),
-        PlanVaultError::VaultNotLocked
-    );
-
-    vault.status = VaultStatus::Unlocked;
-
     let plan = &mut ctx.accounts.plan;
+
+    require!(
+        plan.content_hash == [0u8; 32],
+        PlanVaultError::PlanAlreadySubmitted
+    );
 
     require!(args.content_uri.len() <= 200, PlanVaultError::TooLong);
 

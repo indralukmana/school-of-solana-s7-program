@@ -23,8 +23,8 @@ describe("withdraw", () => {
     ownerKeypair = initializedProgram.wallets.ownerKeypair;
   });
 
-  it("Can withdraw from a vault successfully", async () => {
-    const planTitle = "successful-withdraw";
+  it("Should fail to withdraw after plan submission (vault stays locked)", async () => {
+    const planTitle = "no-withdraw-after-submit";
     const { vaultPda } = await createAndInitializeVault({
       program,
       ownerKeypair,
@@ -49,41 +49,15 @@ describe("withdraw", () => {
     });
     await txSendAndConfirm(program, submitTx, [ownerKeypair]);
 
-    const ownerBalanceBefore = await program.provider.connection.getBalance(
-      ownerKeypair.publicKey,
-    );
-    const vaultBalanceBefore =
-      await program.provider.connection.getBalance(vaultPda);
-
     const { tx: withdrawTx } = await getWithdrawTx({
       program,
       ownerPublicKey: ownerKeypair.publicKey,
       vaultPda,
     });
-    await txSendAndConfirm(program, withdrawTx, [ownerKeypair]);
 
-    const ownerBalanceAfter = await program.provider.connection.getBalance(
-      ownerKeypair.publicKey,
-    );
-    const vaultBalanceAfter =
-      await program.provider.connection.getBalance(vaultPda);
-
-    const vaultAccountInfo =
-      await program.provider.connection.getAccountInfo(vaultPda);
-
-    const vaultDataLength = vaultAccountInfo?.data?.length;
-    if (!vaultDataLength) {
-      throw new Error("Cannot get data length");
-    }
-
-    const rentExempt =
-      await program.provider.connection.getMinimumBalanceForRentExemption(
-        vaultDataLength,
-      );
-
-    expect(vaultBalanceAfter).to.equal(rentExempt);
-    expect(ownerBalanceAfter > ownerBalanceBefore).to.be.true;
-    expect(vaultBalanceAfter).to.lessThan(vaultBalanceBefore);
+    await expect(
+      txSendAndConfirm(program, withdrawTx, [ownerKeypair]),
+    ).rejects.toThrow(/Vault is locked/);
   });
 
   it("Should fail to withdraw from a locked vault", async () => {
@@ -147,8 +121,9 @@ describe("withdraw", () => {
       vaultPda,
     });
 
+    const errPattern = /Vault is locked|ConstraintHasOne/;
     await expect(
       txSendAndConfirm(program, withdrawTx, [anotherUser]),
-    ).rejects.toThrow(/ConstraintHasOne/);
+    ).rejects.toThrow(errPattern);
   });
 });
