@@ -7,6 +7,7 @@ import { AppHero } from '@/components/app-hero'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { useState, useEffect, useMemo } from 'react'
 import { useGetVault } from '@/hooks/use-get-vault'
@@ -16,9 +17,13 @@ import { useAccountLamportsQuery } from '@/hooks/use-account-lamports'
 import { getPlanPda } from '@/lib/plan-vault-utils'
 import { DepositForm } from './deposit-form'
 import { PlanForm } from './plan-form'
-import { SubmittedPlan } from './submitted-plan'
-import { WithdrawButton } from './withdraw-button'
+import { PlanConfirmation } from './plan-confirmation'
 import { VaultProgress } from './vault-progress'
+
+function contentHashIsEmpty(plan: { contentHash: number[] } | null | undefined): boolean {
+  if (!plan) return true
+  return plan.contentHash.every((b: number) => b === 0)
+}
 
 export default function VaultDetailFeature() {
   const { address } = useParams()
@@ -40,7 +45,7 @@ export default function VaultDetailFeature() {
   if (getVault.isLoading) {
     return (
       <div>
-        <AppHero title="Vault Details" subtitle="" />
+        <AppHero title="Vault" subtitle="A promise backed by SOL." />
         <div className="text-center py-12 text-muted-foreground">Loading...</div>
       </div>
     )
@@ -49,7 +54,7 @@ export default function VaultDetailFeature() {
   if (getVault.isError || !getVault.data) {
     return (
       <div>
-        <AppHero title="Vault Details" subtitle="" />
+        <AppHero title="Vault" subtitle="A promise backed by SOL." />
         <div className="text-center py-12 max-w-md mx-auto">
           <p className="text-lg">Vault not found</p>
           <p className="text-sm text-muted-foreground mb-4">This vault may have been closed.</p>
@@ -62,16 +67,17 @@ export default function VaultDetailFeature() {
   const vault = getVault.data
   const isLocked = Object.keys(vault.status)[0] === 'locked'
   const vaultBalance = (lamportsQuery.data?.excessLamports ?? 0) / LAMPORTS_PER_SOL
+  const planSubmitted = getPlan.data && !contentHashIsEmpty(getPlan.data)
+  const planLoaded = getPlan.data !== undefined
 
   let currentStep = 1
-  if (vaultBalance > 0 && isLocked) currentStep = 2
-  if (!isLocked && getPlan.data) {
-    currentStep = vaultBalance > 0 ? 3 : 4
-  }
+  if (vaultBalance > 0) currentStep = 2
+  if (planSubmitted) currentStep = 3
+  if (planSubmitted && vaultBalance > 0) currentStep = 4
 
   return (
     <div>
-      <AppHero title="Vault Details" subtitle="" />
+        <AppHero title={vault.planTitle} subtitle="" />
       <div className="max-w-5xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-6">
@@ -109,7 +115,7 @@ export default function VaultDetailFeature() {
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            {isLocked && vaultBalance === 0 && (
+            {!planSubmitted && vaultBalance === 0 && (
               <Card className="bg-white/[0.04] border-white/[0.08]">
                 <CardHeader>
                   <CardTitle>Deposit SOL</CardTitle>
@@ -120,7 +126,7 @@ export default function VaultDetailFeature() {
               </Card>
             )}
 
-            {isLocked && getPlan.data && getPlan.data.contentHash.every((b: number) => b === 0) && vaultBalance > 0 && (
+            {!planSubmitted && planLoaded && vaultBalance > 0 && (
               <Card className="bg-white/[0.04] border-white/[0.08]">
                 <CardHeader>
                   <CardTitle>Submit Trading Plan</CardTitle>
@@ -131,46 +137,61 @@ export default function VaultDetailFeature() {
               </Card>
             )}
 
-            {!isLocked && getPlan.data && (
-              <Card className="bg-white/[0.04] border-white/[0.08]">
-                <CardHeader>
-                  <CardTitle>Submitted Plan</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <SubmittedPlan plan={getPlan.data} />
-                </CardContent>
-              </Card>
+            {planSubmitted && planPda && (
+              <PlanConfirmation
+                planHash={contentHashToHex(getPlan.data!.contentHash as number[])}
+                vaultAddress={vaultAddress}
+                planPda={planPda}
+              />
             )}
 
-            {!isLocked && getPlan.data && vaultBalance > 0 && (
-              <Card className="bg-white/[0.04] border-white/[0.08]">
-                <CardHeader>
-                  <CardTitle>Withdraw Funds</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <WithdrawButton vaultAddress={vaultAddress} />
-                </CardContent>
-              </Card>
+            {!planSubmitted && planLoaded && (
+              <>
+                <Separator />
+
+                <Card className="bg-white/[0.04] border-red-500/10">
+                  <CardHeader>
+                    <CardTitle className="text-red-400">Danger Zone</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Closing will return all rent-exempt SOL to your wallet. This action is irreversible.
+                    </p>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive" disabled={closeVault.isPending}>
+                          {closeVault.isPending ? 'Closing...' : 'Close Vault'}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Close Vault</DialogTitle>
+                          <DialogDescription>
+                            This will permanently close the vault and return all remaining SOL to your wallet.
+                            This action is irreversible.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogTrigger asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogTrigger>
+                          <Button variant="destructive" onClick={() => closeVault.mutate()} disabled={closeVault.isPending}>
+                            {closeVault.isPending ? 'Closing...' : 'Close Vault'}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </CardContent>
+                </Card>
+              </>
             )}
-
-            <Separator />
-
-            <Card className="bg-white/[0.04] border-red-500/10">
-              <CardHeader>
-                <CardTitle className="text-red-400">Danger Zone</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Closing will return all rent-exempt SOL to your wallet. This action is irreversible.
-                </p>
-                <Button variant="destructive" onClick={() => closeVault.mutate()} disabled={closeVault.isPending}>
-                  {closeVault.isPending ? 'Closing...' : 'Close Vault'}
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
     </div>
   )
+}
+
+function contentHashToHex(hash: number[]): string {
+  return hash.map((b) => b.toString(16).padStart(2, '0')).join('')
 }

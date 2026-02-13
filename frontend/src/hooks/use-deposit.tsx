@@ -30,13 +30,14 @@ export function useDeposit(vaultAddress: PublicKey) {
     onSuccess: ({ signature, amount }) => {
       transactionToast(signature)
       queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
+      queryClient.invalidateQueries({ queryKey: ['api-activity'] })
       postEvent({
         eventType: 'deposit_made',
         actorId: publicKey!.toBase58(),
         vaultAddress: vaultAddress.toBase58(),
         signature,
         metadata: JSON.stringify({ amount }),
-      }).catch(() => {})
+      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

@@ -33,8 +33,8 @@ export function VaultProgress({ currentStep }: VaultProgressProps) {
         | 'pending',
     },
     {
-      label: 'Withdraw',
-      description: 'Execute your trade',
+      label: 'Record Outcome',
+      description: 'Log your trade result',
       icon: <Wallet className="h-5 w-5" />,
       status: (currentStep >= 4 ? 'completed' : currentStep === 3 ? 'active' : 'pending') as
         | 'completed'

@@ -11,11 +11,11 @@ function contentHashToHex(hash: number[]): string {
 }
 
 export function SubmittedPlan({ plan }: { plan: Plan | null | undefined }) {
-  if (!plan) return null
-
-  const contentHash = contentHashToHex(plan.contentHash as number[])
+  const contentHash = plan ? contentHashToHex(plan.contentHash as number[]) : ''
   const isDefaultHash = contentHash === '00'.repeat(32)
-  const { data: richPlan, isLoading } = useApiPlan(isDefaultHash ? null : contentHash)
+  const { data: richPlan, isLoading } = useApiPlan(isDefaultHash || !plan ? null : contentHash)
+
+  if (!plan) return null
 
   if (isLoading) {
     return (

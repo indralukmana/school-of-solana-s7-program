@@ -12,21 +12,37 @@ import { Loader2 } from 'lucide-react'
 
 export function DepositForm({ vaultAddress }: { vaultAddress: PublicKey }) {
   const [amount, setAmount] = useState('')
+  const [error, setError] = useState('')
   const deposit = useDeposit(vaultAddress)
   const { publicKey } = useWallet()
   const { connection } = useConnection()
   const walletLamports = useAccountLamportsQuery(connection, publicKey)
 
+  const feeBuffer = 0.01 * LAMPORTS_PER_SOL
+  const maxLamports = walletLamports.data ? walletLamports.data.lamports - feeBuffer : 0
+  const maxSol = Math.max(0, maxLamports / LAMPORTS_PER_SOL)
+  const walletSol = (walletLamports.data?.lamports ?? 0) / LAMPORTS_PER_SOL
+
   const handleMaxClick = () => {
-    if (!walletLamports.data) return
-    const feeBuffer = 0.01 * LAMPORTS_PER_SOL
-    const maxLamports = walletLamports.data.lamports - feeBuffer
-    const maxSol = Math.max(0, maxLamports / LAMPORTS_PER_SOL)
     setAmount(maxSol.toString())
+    setError('')
   }
 
   const depositAmount = parseFloat(amount) || 0
   const isLoading = deposit.isPending
+
+  const handleDeposit = () => {
+    setError('')
+    if (depositAmount <= 0) {
+      setError('Amount must be greater than 0')
+      return
+    }
+    if (depositAmount > maxSol) {
+      setError(`Insufficient balance. You have ${walletSol.toFixed(4)} SOL available.`)
+      return
+    }
+    deposit.mutate(depositAmount)
+  }
 
   return (
     <div className="space-y-4">
@@ -40,8 +56,8 @@ export function DepositForm({ vaultAddress }: { vaultAddress: PublicKey }) {
               step="any"
               placeholder="0.00"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="pr-12"
+              onChange={(e) => { setAmount(e.target.value); setError('') }}
+              className={`pr-12 ${error ? 'border-red-500' : ''}`}
               disabled={isLoading}
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -52,7 +68,7 @@ export function DepositForm({ vaultAddress }: { vaultAddress: PublicKey }) {
             Max
           </Button>
           <Button
-            onClick={() => deposit.mutate(depositAmount)}
+            onClick={handleDeposit}
             disabled={isLoading || depositAmount <= 0}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500"
           >
@@ -66,6 +82,10 @@ export function DepositForm({ vaultAddress }: { vaultAddress: PublicKey }) {
             )}
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Wallet balance: {walletSol.toFixed(4)} SOL &middot; Max deposit: {maxSol.toFixed(4)} SOL
+        </p>
+        {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
       </Field>
     </div>
   )

@@ -30,13 +30,14 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
     onSuccess: (signature) => {
       transactionToast(signature)
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
-      router.push('/account')
+      queryClient.invalidateQueries({ queryKey: ['api-activity'] })
+      router.push('/vaults')
       postEvent({
         eventType: 'vault_closed',
         actorId: publicKey!.toBase58(),
         vaultAddress: vaultAddress.toBase58(),
         signature,
-      }).catch(() => {})
+      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

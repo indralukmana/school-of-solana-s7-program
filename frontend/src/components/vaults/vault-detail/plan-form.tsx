@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { useWallet } from '@solana/wallet-adapter-react'
 import { useSubmitPlan } from '@/hooks/use-submit-plan'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,7 +17,6 @@ interface PlanFormProps {
 }
 
 export function PlanForm({ vaultAddress, planPda, vaultTitle }: PlanFormProps) {
-  const { publicKey } = useWallet()
   const [planDetails, setPlanDetails] = useState({
     tradingPlatform: '',
     riskLevel: '',

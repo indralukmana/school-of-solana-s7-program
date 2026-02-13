@@ -36,7 +36,7 @@ export default function VaultListFeature() {
   if (!publicKey) {
     return (
       <div>
-        <AppHero title="My Vaults" subtitle="Here are all the vaults you have created." />
+        <AppHero title="Your Vaults" subtitle="Each vault is a promise backed by SOL." />
         <div className="text-center py-8 text-muted-foreground">Please connect your wallet to view your vaults.</div>
       </div>
     )
@@ -45,7 +45,7 @@ export default function VaultListFeature() {
   if (getVaults.isLoading) {
     return (
       <div>
-        <AppHero title="My Vaults" subtitle="Here are all the vaults you have created." />
+        <AppHero title="Your Vaults" subtitle="Each vault is a promise backed by SOL." />
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <VaultCardSkeleton />
@@ -69,7 +69,7 @@ export default function VaultListFeature() {
   if (vaults.length === 0) {
     return (
       <div>
-        <AppHero title="My Vaults" subtitle="Here are all the vaults you have created." />
+        <AppHero title="Your Vaults" subtitle="Each vault is a promise backed by SOL." />
         <div className="text-center py-12 max-w-md mx-auto px-4">
           <h3 className="text-2xl font-semibold">No Vaults Found</h3>
           <p className="text-muted-foreground mt-2">
@@ -85,7 +85,7 @@ export default function VaultListFeature() {
 
   return (
     <div>
-      <AppHero title="My Vaults" subtitle="Here are all the vaults you have created." />
+      <AppHero title="Your Vaults" subtitle="Each vault is a promise backed by SOL." />
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
