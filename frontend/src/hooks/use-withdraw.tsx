@@ -23,12 +23,13 @@ export function useWithdraw(vaultAddress: PublicKey) {
     onSuccess: (signature) => {
       transactionToast(signature)
       queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
+      queryClient.invalidateQueries({ queryKey: ['api-activity'] })
       postEvent({
         eventType: 'withdraw_completed',
         actorId: publicKey!.toBase58(),
         vaultAddress: vaultAddress.toBase58(),
         signature,
-      }).catch(() => {})
+      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

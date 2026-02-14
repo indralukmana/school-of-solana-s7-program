@@ -67,7 +67,7 @@ function ActivityRow({ event }: { event: ActivityEvent }) {
 
 export function ActivityFeed() {
   const { publicKey } = useWallet()
-  const { data: allEvents, isLoading } = useApiActivity(
+  const { data: allEvents, isLoading, isError, error } = useApiActivity(
     publicKey ? { actor: publicKey.toBase58() } : undefined,
   )
   const events = allEvents ?? []
@@ -75,7 +75,7 @@ export function ActivityFeed() {
   if (!publicKey) {
     return (
       <div>
-        <AppHero title="Activity" subtitle="View all your vault transactions" />
+        <AppHero title="Journal" subtitle="Every vault event, from creation to close." />
         <div className="text-center py-12 text-muted-foreground">
           Please connect your wallet to view activity.
         </div>
@@ -86,7 +86,7 @@ export function ActivityFeed() {
   if (isLoading) {
     return (
       <div>
-        <AppHero title="Activity" subtitle="View all your vault transactions" />
+        <AppHero title="Journal" subtitle="Every vault event, from creation to close." />
         <div className="max-w-2xl mx-auto px-4 space-y-2">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-16 w-full" />
@@ -108,9 +108,21 @@ export function ActivityFeed() {
     'vault_closed',
   ]
 
+  if (isError) {
+    return (
+      <div>
+        <AppHero title="Journal" subtitle="Every vault event, from creation to close." />
+        <div className="max-w-2xl mx-auto px-4 text-center py-12">
+          <p className="text-red-400">Failed to load activity.</p>
+          <p className="text-sm text-muted-foreground mt-1">{(error as Error)?.message}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
-      <AppHero title="Activity" subtitle="View all your vault transactions" />
+      <AppHero title="Journal" subtitle="Every vault event, from creation to close." />
       <div className="max-w-2xl mx-auto px-4">
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="mb-4 flex-wrap">

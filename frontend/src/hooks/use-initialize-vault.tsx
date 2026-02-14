@@ -29,12 +29,13 @@ export function useInitializeVault() {
     onSuccess: ({ signature, vaultPda }) => {
       transactionToast(signature)
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
+      queryClient.invalidateQueries({ queryKey: ['api-activity'] })
       postEvent({
         eventType: 'vault_created',
         actorId: publicKey!.toBase58(),
         vaultAddress: vaultPda.toBase58(),
         signature,
-      }).catch(() => {})
+      })
     },
     onError: (error: Error) => {
       toast.error(error.message)
