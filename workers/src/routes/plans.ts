@@ -1,5 +1,6 @@
 import { IRequest } from 'itty-router'
 import { requireAuth } from '../auth'
+import { toCamelCase } from '../helpers'
 
 interface Env {
   DB: D1Database
@@ -49,6 +50,7 @@ export async function handlePostPlan(request: IRequest, env: Env): Promise<Respo
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 
+  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(ownerId).run()
   await env.DB.prepare(
     `INSERT INTO plans (id, vault_address, owner_id, title, description, trading_platform,
      risk_level, ticker, investment_lamports, stop_loss_bps, take_profit_bps,
@@ -73,8 +75,6 @@ export async function handlePostPlan(request: IRequest, env: Env): Promise<Respo
       body.contentUri,
     )
     .run()
-
-  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(ownerId).run()
 
   return new Response(JSON.stringify({ id: contentHash, contentHash }), {
     status: 201,
@@ -103,6 +103,7 @@ export async function handlePostPlanConfirm(request: IRequest, env: Env): Promis
     .bind(signature, planHash)
     .run()
 
+  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(ownerId).run()
   await env.DB.prepare(
     `INSERT OR IGNORE INTO activity_events (id, event_type, actor_id, vault_address, plan_id, signature, metadata)
      VALUES (?, 'plan_submitted', ?, ?, ?, ?, ?)`,
@@ -126,7 +127,7 @@ export async function handleGetPlan(request: IRequest, env: { DB: D1Database }):
   const planHash = request.params.hash
   const plan = await env.DB.prepare('SELECT * FROM plans WHERE id = ?').bind(planHash).first()
   if (!plan) return new Response(JSON.stringify({ error: 'Plan not found' }), { status: 404 })
-  return new Response(JSON.stringify(plan), {
+  return new Response(JSON.stringify(toCamelCase(plan as Record<string, unknown>)), {
     headers: { 'Content-Type': 'application/json' },
   })
 }
@@ -152,7 +153,46 @@ export async function handleGetPlans(request: IRequest, env: { DB: D1Database })
   const { results } = await env.DB.prepare(query)
     .bind(...params)
     .all()
-  return new Response(JSON.stringify(results), {
+  return new Response(JSON.stringify((results as Record<string, unknown>[]).map(toCamelCase)), {
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+export async function handleCancelPlan(request: IRequest, env: Env): Promise<Response> {
+  const ownerId = await requireAuth(request, env)
+  if (!ownerId)
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+
+  const planHash = request.params.hash
+
+  const plan = await env.DB.prepare(
+    'SELECT * FROM plans WHERE id = ? AND owner_id = ? AND cancelled = 0',
+  )
+    .bind(planHash, ownerId)
+    .first()
+  if (!plan) return new Response(JSON.stringify({ error: 'Plan not found or already cancelled' }), { status: 404 })
+
+  await env.DB.prepare(
+    "UPDATE plans SET cancelled = 1, updated_at = datetime('now') WHERE id = ?",
+  )
+    .bind(planHash)
+    .run()
+
+  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(ownerId).run()
+  await env.DB.prepare(
+    `INSERT INTO activity_events (id, event_type, actor_id, vault_address, plan_id, metadata)
+     VALUES (?, 'plan_cancelled', ?, ?, ?, ?)`,
+  )
+    .bind(
+      crypto.randomUUID(),
+      ownerId,
+      plan.vault_address as string,
+      planHash,
+      JSON.stringify({ title: plan.title as string }),
+    )
+    .run()
+
+  return new Response(JSON.stringify({ ok: true }), {
     headers: { 'Content-Type': 'application/json' },
   })
 }

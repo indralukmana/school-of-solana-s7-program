@@ -1,4 +1,5 @@
 import { IRequest } from 'itty-router'
+import { toCamelCase } from '../helpers'
 
 export async function handleGetActivity(
   request: IRequest,
@@ -29,7 +30,7 @@ export async function handleGetActivity(
   const { results } = await env.DB.prepare(query)
     .bind(...params)
     .all()
-  return new Response(JSON.stringify(results), {
+  return new Response(JSON.stringify((results as Record<string, unknown>[]).map(toCamelCase)), {
     headers: { 'Content-Type': 'application/json' },
   })
 }
@@ -49,6 +50,7 @@ export async function handlePostEvent(
     }
 
   const eventId = crypto.randomUUID()
+  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(actorId).run()
   await env.DB.prepare(
     `INSERT OR IGNORE INTO activity_events (id, event_type, actor_id, vault_address, plan_id, signature, metadata)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -63,8 +65,6 @@ export async function handlePostEvent(
       metadata ?? null,
     )
     .run()
-
-  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(actorId).run()
 
   return new Response(JSON.stringify({ id: eventId }), {
     status: 201,

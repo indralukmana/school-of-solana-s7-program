@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS plans (
   content_hash       TEXT NOT NULL,
   content_uri        TEXT NOT NULL,
   onchain_tx         TEXT,
+  cancelled          INTEGER NOT NULL DEFAULT 0,
   created_at         TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at         TEXT NOT NULL DEFAULT (datetime('now'))
 );

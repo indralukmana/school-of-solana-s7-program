@@ -1,10 +1,11 @@
-import { AutoRouter, cors, IRequest } from 'itty-router'
+import { AutoRouter, IRequest } from 'itty-router'
 import { handleAuthNonce, handleAuthVerify } from './auth'
 import {
   handlePostPlan,
   handlePostPlanConfirm,
   handleGetPlan,
   handleGetPlans,
+  handleCancelPlan,
 } from './routes/plans'
 import { handlePostOutcome, handleGetOutcomes, handleGetOutcomesByOwner } from './routes/outcomes'
 import { handleGetUser, handlePutUser } from './routes/users'
@@ -20,16 +21,44 @@ interface Env {
   CORS_ORIGIN: string
 }
 
-const { preflight, corsify } = cors({
-  origin: (origin: string) => origin,
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Authorization', 'Content-Type'],
-  maxAge: 86400,
-})
+function addCorsHeaders(response: Response, request: IRequest): Response {
+  const origin = request.headers.get('origin') || '*'
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+    'Access-Control-Max-Age': '86400',
+  }
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders })
+  }
+  const headers = new Headers(response.headers)
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    headers.set(key, value)
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
+}
 
 const router = AutoRouter<IRequest, [Env, ExecutionContext]>({
-  before: [preflight],
-  finally: [(r: Response) => corsify(r)],
+  before: [(req: IRequest) => {
+    if (req.method === 'OPTIONS') {
+      const origin = req.headers.get('origin') || '*'
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+          'Access-Control-Max-Age': '86400',
+        },
+      })
+    }
+  }],
+  finally: [(r: Response, req: IRequest) => addCorsHeaders(r, req)],
 })
 
 // Auth
@@ -41,6 +70,7 @@ router.post('/api/auth/verify', (req, env) =>
 // Plans
 router.post('/api/plans', (req, env) => handlePostPlan(req, env))
 router.post('/api/plans/:hash/confirm', (req, env) => handlePostPlanConfirm(req, env))
+router.post('/api/plans/:hash/cancel', (req, env) => handleCancelPlan(req, env))
 router.get('/api/plans/:hash', (req, env) => handleGetPlan(req, env))
 router.get('/api/plans', (req, env) => handleGetPlans(req, env))
 

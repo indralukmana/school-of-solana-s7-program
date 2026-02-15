@@ -1,5 +1,6 @@
 import { IRequest } from 'itty-router'
 import { requireAuth } from '../auth'
+import { toCamelCase } from '../helpers'
 
 export async function handlePostOutcome(
   request: IRequest,
@@ -23,6 +24,8 @@ export async function handlePostOutcome(
   if (!plan) return new Response(JSON.stringify({ error: 'Plan not found' }), { status: 404 })
 
   const outcomeId = crypto.randomUUID()
+  await env.DB.prepare('INSERT OR IGNORE INTO users (id) VALUES (?)').bind(ownerId).run()
+  await env.DB.prepare('DELETE FROM outcomes WHERE plan_id = ?').bind(planHash).run()
   await env.DB.prepare(
     `INSERT INTO outcomes (id, plan_id, owner_id, pnl_lamports, notes, screenshot_urls, settled_at)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -67,7 +70,7 @@ export async function handleGetOutcomes(
   )
     .bind(planHash)
     .all()
-  return new Response(JSON.stringify(results), {
+  return new Response(JSON.stringify((results as Record<string, unknown>[]).map(toCamelCase)), {
     headers: { 'Content-Type': 'application/json' },
   })
 }
@@ -106,7 +109,7 @@ export async function handleGetOutcomesByOwner(
     .bind(...params)
     .all()
 
-  return new Response(JSON.stringify(results), {
+  return new Response(JSON.stringify((results as Record<string, unknown>[]).map(toCamelCase)), {
     headers: { 'Content-Type': 'application/json' },
   })
 }

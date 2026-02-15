@@ -1,4 +1,5 @@
 import { IRequest } from 'itty-router'
+import { toCamelCase } from '../helpers'
 
 export async function handleGetAnalytics(
   request: IRequest,
@@ -76,14 +77,23 @@ export async function handleGetAnalytics(
     .bind(owner)
     .all()
 
+  // Cancelled count
+  const { results: cancelResults } = await env.DB.prepare(
+    "SELECT COUNT(*) AS count FROM plans WHERE owner_id = ? AND cancelled = 1",
+  )
+    .bind(owner)
+    .all()
+  const cancelledCount = (cancelResults[0] as { count: number }).count
+
   return new Response(
     JSON.stringify({
       totalPnlLamports,
       profitFactor,
       winRate,
       totalOutcomes,
-      outcomeMonths: monthResults,
-      tickerStats: tickerResults,
+      cancelledCount,
+      outcomeMonths: (monthResults as Record<string, unknown>[]).map(toCamelCase),
+      tickerStats: (tickerResults as Record<string, unknown>[]).map(toCamelCase),
     }),
     { headers: { 'Content-Type': 'application/json' } },
   )
