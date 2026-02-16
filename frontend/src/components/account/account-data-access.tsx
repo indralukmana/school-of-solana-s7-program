@@ -76,7 +76,7 @@ export function useTransferSol({ address }: { address: PublicKey }) {
         await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
 
         return signature
-      } catch (error: unknown) {
+      } catch {
         return
       }
     },
@@ -93,7 +93,7 @@ export function useTransferSol({ address }: { address: PublicKey }) {
         }),
       ])
     },
-    onError: (_error) => {},
+    onError: () => {},
   })
 }
 

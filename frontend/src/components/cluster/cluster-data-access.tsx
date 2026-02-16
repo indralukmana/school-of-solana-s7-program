@@ -79,13 +79,13 @@ export function ClusterProvider({ children }: { children: ReactNode }) {
       try {
         new Connection(cluster.endpoint)
         setClusters([...clusters, cluster])
-      } catch (_err) {}
+      } catch {}
     },
     deleteCluster: (cluster: SolanaCluster) => {
       setClusters(clusters.filter((item) => item.name !== cluster.name))
     },
     setCluster: (cluster: SolanaCluster) => setCluster(cluster),
-    getExplorerUrl: (path: string) => `https://explorer.solana.com/${path}${getClusterUrlParam(cluster)}`,
+    getExplorerUrl: (path: string) => `https://solscan.io/${path}${getClusterUrlParam(cluster)}`,
   }
   return <Context.Provider value={value}>{children}</Context.Provider>
 }
