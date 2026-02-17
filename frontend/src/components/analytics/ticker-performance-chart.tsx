@@ -16,7 +16,7 @@ interface Props {
 const chartConfig = {
   pnl: {
     label: 'P&L (SOL)',
-    color: 'var(--purple-400)',
+    color: 'var(--color-chart-2)',
   },
 } satisfies ChartConfig
 
@@ -37,7 +37,7 @@ export function TickerPerformanceChart({ tickers }: Props) {
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={entry.pnl >= 0 ? 'var(--emerald-400)' : 'var(--red-400)'}
+              fill={entry.pnl >= 0 ? 'var(--color-chart-3)' : 'var(--color-destructive)'}
             />
           ))}
         </Bar>

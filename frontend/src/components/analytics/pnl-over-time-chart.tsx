@@ -16,7 +16,7 @@ interface Props {
 const chartConfig = {
   pnl: {
     label: 'P&L (SOL)',
-    color: 'var(--emerald-400)',
+    color: 'var(--color-chart-1)',
   },
 } satisfies ChartConfig
 
@@ -36,7 +36,7 @@ export function PnlOverTimeChart({ months }: Props) {
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={entry.pnl >= 0 ? 'var(--emerald-400)' : 'var(--red-400)'}
+              fill={entry.pnl >= 0 ? 'var(--color-chart-3)' : 'var(--color-destructive)'}
             />
           ))}
         </Bar>

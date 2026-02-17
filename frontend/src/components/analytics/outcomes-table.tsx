@@ -42,6 +42,14 @@ export function OutcomesTable({ outcomes }: Props) {
     </TableHead>
   )
 
+  if (outcomes.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        No outcomes recorded yet.
+      </div>
+    )
+  }
+
   return (
     <Table>
       <TableHeader>

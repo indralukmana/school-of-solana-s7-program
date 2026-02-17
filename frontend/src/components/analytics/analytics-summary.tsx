@@ -30,14 +30,19 @@ export function AnalyticsSummary({ data }: Props) {
       color: 'text-blue-400',
     },
     {
-      label: 'Total Trades',
+      label: 'Executed',
       value: data.totalOutcomes.toString(),
-      color: 'text-cyan-400',
+      color: 'text-emerald-400',
+    },
+    {
+      label: 'Cancelled',
+      value: data.cancelledCount.toString(),
+      color: 'text-amber-400',
     },
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       {stats.map((stat) => (
         <Card key={stat.label} className="bg-white/[0.04] border-white/[0.08]">
           <CardContent className="pt-6 text-center">
