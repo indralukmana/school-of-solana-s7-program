@@ -31,7 +31,7 @@ export function DashboardFeature() {
       <div>
         <AppHero
           title="PlanVault"
-          subtitle="Create a vault, deposit SOL, submit a trading plan, and withdraw your funds."
+          subtitle="Stake SOL on your trading convictions. Create a vault, commit your plan, prove your thesis."
         />
         <div className="text-center py-8">
           <p className="text-muted-foreground mb-4">Connect your wallet to get started</p>
@@ -54,8 +54,8 @@ export function DashboardFeature() {
   return (
     <div>
       <AppHero
-        title="PlanVault"
-        subtitle="Commit to your trading plan with SOL. Create a vault, deposit funds, submit your plan, and withdraw when you're ready."
+        title="Plan Your Trade"
+        subtitle="Stake SOL on your next move. Create a vault, deposit funds, submit your plan, and put your conviction on the line."
       />
 
       <div className="max-w-5xl mx-auto px-4 space-y-8">

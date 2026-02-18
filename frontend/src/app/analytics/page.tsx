@@ -19,7 +19,7 @@ export default function AnalyticsPage() {
   if (!publicKey) {
     return (
       <div>
-        <AppHero title="Analytics" subtitle="Track your trading performance across all vaults." />
+        <AppHero title="Performance" subtitle="Track your trading performance across all vaults." />
         <div className="text-center py-8">
           <p className="text-muted-foreground mb-4">Connect your wallet to see your analytics</p>
         </div>
@@ -29,7 +29,7 @@ export default function AnalyticsPage() {
 
   return (
     <div>
-      <AppHero title="Analytics" subtitle="Your trading performance at a glance." />
+      <AppHero title="Performance" subtitle="Win rate, profit factor, and P&L across your vaults." />
 
       <div className="max-w-5xl mx-auto px-4 space-y-8">
         <AnalyticsSection owner={publicKey.toBase58()} />
