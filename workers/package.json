@@ -6,16 +6,19 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:init": "wrangler d1 execute plan-vault-db --file=src/schema.sql",
-    "db:local": "wrangler d1 execute plan-vault-db --file=src/schema.sql --local"
+    "db:local": "wrangler d1 execute plan-vault-db --file=src/schema.sql --local",
+    "db:migrate": "wrangler d1 execute plan-vault-db --file=src/migrations/001-add-cancelled.sql --local"
   },
   "dependencies": {
+    "@noble/curves": "^2.2.0",
     "@siws/core": "^0.1.1",
-    "itty-router": "^5.0.0",
-    "@solana/web3.js": "^1.98.0"
+    "@solana/web3.js": "^1.98.0",
+    "bs58": "^6.0.0",
+    "itty-router": "^5.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.0.0",
-    "wrangler": "^3.0.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "wrangler": "^4.102.0"
   }
 }
