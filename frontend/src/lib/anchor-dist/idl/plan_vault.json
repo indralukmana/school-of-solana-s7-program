@@ -288,6 +288,11 @@
       "code": 6008,
       "name": "TooLong",
       "msg": "Input string exceeds max length"
+    },
+    {
+      "code": 6009,
+      "name": "PlanAlreadySubmitted",
+      "msg": "Plan already submitted for this vault"
     }
   ],
   "types": [

@@ -7,3 +7,6 @@ anchor_project/target
 frontend/.next
 frontend/.vercel
 frontend/next-env.d.ts
+frontend/.env.local
+
+workers/.wrangler

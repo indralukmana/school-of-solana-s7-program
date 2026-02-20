@@ -294,6 +294,11 @@ export type PlanVault = {
       "code": 6008,
       "name": "tooLong",
       "msg": "Input string exceeds max length"
+    },
+    {
+      "code": 6009,
+      "name": "planAlreadySubmitted",
+      "msg": "Plan already submitted for this vault"
     }
   ],
   "types": [
