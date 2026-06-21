@@ -24,7 +24,7 @@ export async function handleGetAnalytics(
        COUNT(o.id) AS total_outcomes
      FROM outcomes o
      JOIN plans p ON o.plan_id = p.id
-     WHERE p.owner_id = ?`,
+      WHERE p.owner_id = ? AND p.cancelled = 0`,
   )
     .bind(owner)
     .all()
@@ -55,8 +55,8 @@ export async function handleGetAnalytics(
        COUNT(o.id) AS count
      FROM outcomes o
      JOIN plans p ON o.plan_id = p.id
-     WHERE p.owner_id = ?
-     GROUP BY month
+      WHERE p.owner_id = ? AND p.cancelled = 0
+      GROUP BY month
      ORDER BY month ASC`,
   )
     .bind(owner)
@@ -70,8 +70,8 @@ export async function handleGetAnalytics(
        COUNT(o.id) AS count
      FROM outcomes o
      JOIN plans p ON o.plan_id = p.id
-     WHERE p.owner_id = ?
-     GROUP BY p.ticker
+      WHERE p.owner_id = ? AND p.cancelled = 0
+      GROUP BY p.ticker
      ORDER BY ABS(SUM(o.pnl_lamports)) DESC`,
   )
     .bind(owner)
