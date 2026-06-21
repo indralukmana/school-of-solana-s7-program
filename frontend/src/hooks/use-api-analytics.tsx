@@ -8,6 +8,5 @@ export function useApiAnalytics(owner: string | null) {
     queryKey: ['api-analytics', owner],
     queryFn: () => getAnalytics(owner!),
     enabled: !!owner,
-    staleTime: 30_000,
   })
 }

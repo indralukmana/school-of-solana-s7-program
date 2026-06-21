@@ -29,10 +29,11 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
     },
     onSuccess: (signature) => {
       transactionToast(signature)
-      queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
-      queryClient.invalidateQueries({ queryKey: ['api-plans'] })
-      queryClient.invalidateQueries({ queryKey: ['api-activity'] })
-      queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
+      queryClient.removeQueries({ queryKey: ['get-vaults'] })
+      queryClient.removeQueries({ queryKey: ['get-vault'] })
+      queryClient.removeQueries({ queryKey: ['api-analytics'] })
+      queryClient.removeQueries({ queryKey: ['api-plans'] })
+      queryClient.removeQueries({ queryKey: ['api-activity'] })
       router.push('/vaults')
       postEvent({
         eventType: 'vault_closed',

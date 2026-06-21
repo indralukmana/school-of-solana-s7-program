@@ -78,11 +78,11 @@ export function PlanConfirmation({
 
   const handleClose = (signature: string) => {
     transactionToast(signature)
-    queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
-    queryClient.invalidateQueries({ queryKey: ['get-vault'] })
-    queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
-    queryClient.invalidateQueries({ queryKey: ['api-plans'] })
-    queryClient.invalidateQueries({ queryKey: ['api-activity'] })
+    queryClient.removeQueries({ queryKey: ['get-vaults'] })
+    queryClient.removeQueries({ queryKey: ['get-vault'] })
+    queryClient.removeQueries({ queryKey: ['api-analytics'] })
+    queryClient.removeQueries({ queryKey: ['api-plans'] })
+    queryClient.removeQueries({ queryKey: ['api-activity'] })
     postEvent({
       eventType: 'vault_closed',
       actorId: publicKey!.toBase58(),
