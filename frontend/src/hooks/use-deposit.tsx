@@ -27,18 +27,22 @@ export function useDeposit(vaultAddress: PublicKey) {
         .rpc()
       return { signature: sig, amount }
     },
-    onSuccess: ({ signature, amount }) => {
+    onSuccess: async ({ signature, amount }) => {
       transactionToast(signature)
+      try {
+        await postEvent({
+          eventType: 'deposit_made',
+          actorId: publicKey!.toBase58(),
+          vaultAddress: vaultAddress.toBase58(),
+          signature,
+          metadata: JSON.stringify({ amount }),
+        })
+      } catch (e) {
+        console.error('postEvent failed:', e)
+      }
       queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
       queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
-      postEvent({
-        eventType: 'deposit_made',
-        actorId: publicKey!.toBase58(),
-        vaultAddress: vaultAddress.toBase58(),
-        signature,
-        metadata: JSON.stringify({ amount }),
-      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

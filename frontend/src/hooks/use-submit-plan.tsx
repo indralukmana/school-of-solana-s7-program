@@ -47,7 +47,7 @@ export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | 
         planId: id,
         signature,
         metadata: JSON.stringify({ title: planContent.title }),
-      }).catch(() => {})
+      }).catch((e) => console.error('postEvent failed:', e))
 
       return { signature, contentHash }
     },

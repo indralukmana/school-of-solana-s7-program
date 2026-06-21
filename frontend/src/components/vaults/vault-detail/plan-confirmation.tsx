@@ -76,9 +76,20 @@ export function PlanConfirmation({
   const transactionToast = useTransactionToast()
   const hasOutcome = (outcomes?.length ?? 0) > 0
 
-  const handleClose = (signature: string) => {
+  const handleClose = async (signature: string) => {
     const vaultKey = vaultAddress.toBase58()
     transactionToast(signature)
+
+    try {
+      await postEvent({
+        eventType: 'vault_closed',
+        actorId: publicKey!.toBase58(),
+        vaultAddress: vaultAddress.toBase58(),
+        signature,
+      })
+    } catch (e) {
+      console.error('postEvent failed:', e)
+    }
 
     // Optimistically remove the closed vault from all vault list caches
     queryClient.setQueriesData({ queryKey: ['get-vaults'] }, (old: unknown) =>
@@ -90,12 +101,6 @@ export function PlanConfirmation({
     queryClient.invalidateQueries({ queryKey: ['api-analytics'], refetchType: 'all' })
     queryClient.invalidateQueries({ queryKey: ['api-plans'], refetchType: 'all' })
     queryClient.invalidateQueries({ queryKey: ['api-activity'], refetchType: 'all' })
-    postEvent({
-      eventType: 'vault_closed',
-      actorId: publicKey!.toBase58(),
-      vaultAddress: vaultAddress.toBase58(),
-      signature,
-    }).catch(() => {})
     router.push('/vaults')
     onDone?.()
   }

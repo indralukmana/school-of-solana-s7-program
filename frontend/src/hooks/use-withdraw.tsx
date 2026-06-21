@@ -20,16 +20,20 @@ export function useWithdraw(vaultAddress: PublicKey) {
       if (!publicKey) throw new Error('Wallet not connected')
       return program.methods.withdraw().accountsPartial({ vaultAccount: vaultAddress, owner: publicKey }).rpc()
     },
-    onSuccess: (signature) => {
+    onSuccess: async (signature) => {
       transactionToast(signature)
+      try {
+        await postEvent({
+          eventType: 'withdraw_completed',
+          actorId: publicKey!.toBase58(),
+          vaultAddress: vaultAddress.toBase58(),
+          signature,
+        })
+      } catch (e) {
+        console.error('postEvent failed:', e)
+      }
       queryClient.invalidateQueries({ queryKey: ['get-vault', { vaultAddress }] })
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
-      postEvent({
-        eventType: 'withdraw_completed',
-        actorId: publicKey!.toBase58(),
-        vaultAddress: vaultAddress.toBase58(),
-        signature,
-      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

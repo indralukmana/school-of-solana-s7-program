@@ -1,3 +1,4 @@
+import { resolve } from 'path'
 import type { NextConfig } from 'next'
 
 function buildCsp(): string {
@@ -28,6 +29,9 @@ function buildCsp(): string {
 }
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: resolve('..'),
+  },
   async headers() {
     return [
       {

@@ -9,6 +9,7 @@ export function useApiActivity(filter?: { actor?: string; vault?: string }) {
   return useQuery<ActivityEvent[]>({
     queryKey: ['api-activity', filter],
     queryFn: () => getActivity(filter),
+    staleTime: 0,
     refetchInterval: 10_000,
     initialData: [],
   })

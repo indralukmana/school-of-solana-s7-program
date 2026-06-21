@@ -34,16 +34,20 @@ export function OutcomePanel({ planHash, vaultAddress }: { planHash: string; vau
       })
       queryClient.invalidateQueries({ queryKey: ['api-outcomes', planHash] })
       queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
+      if (publicKey) {
+        try {
+          await postEvent({
+            eventType: 'outcome_added',
+            actorId: publicKey.toBase58(),
+            vaultAddress,
+            metadata: JSON.stringify({ pnlLamports }),
+          })
+        } catch (e) {
+          console.error('postEvent failed:', e)
+        }
+      }
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
-      if (publicKey) {
-        postEvent({
-          eventType: 'outcome_added',
-          actorId: publicKey.toBase58(),
-          vaultAddress,
-          metadata: JSON.stringify({ pnlLamports }),
-        })
-      }
       setEditing(false)
       toast.success(existing ? 'Outcome updated' : 'Outcome added')
     } catch {

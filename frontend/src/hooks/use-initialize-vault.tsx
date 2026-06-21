@@ -26,17 +26,21 @@ export function useInitializeVault() {
         .rpc()
       return { signature: sig, vaultPda }
     },
-    onSuccess: ({ signature, vaultPda }) => {
+    onSuccess: async ({ signature, vaultPda }) => {
       transactionToast(signature)
+      try {
+        await postEvent({
+          eventType: 'vault_created',
+          actorId: publicKey!.toBase58(),
+          vaultAddress: vaultPda.toBase58(),
+          signature,
+        })
+      } catch (e) {
+        console.error('postEvent failed:', e)
+      }
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
       queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
-      postEvent({
-        eventType: 'vault_created',
-        actorId: publicKey!.toBase58(),
-        vaultAddress: vaultPda.toBase58(),
-        signature,
-      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

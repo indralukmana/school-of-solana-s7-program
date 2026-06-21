@@ -2,6 +2,7 @@
 'use client'
 
 import { isServer, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 function makeQueryClient() {
   return new QueryClient({
@@ -27,5 +28,10 @@ function getQueryClient() {
 export function ReactQueryProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  )
 }

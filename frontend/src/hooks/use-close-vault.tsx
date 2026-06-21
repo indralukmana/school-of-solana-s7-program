@@ -27,9 +27,20 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
         .accountsPartial({ vaultAccount: vaultAddress, owner: publicKey, plan: planAddress })
         .rpc()
     },
-    onSuccess: (signature) => {
+    onSuccess: async (signature) => {
       const vaultKey = vaultAddress.toBase58()
       transactionToast(signature)
+
+      try {
+        await postEvent({
+          eventType: 'vault_closed',
+          actorId: publicKey!.toBase58(),
+          vaultAddress: vaultAddress.toBase58(),
+          signature,
+        })
+      } catch (e) {
+        console.error('postEvent failed:', e)
+      }
 
       // Optimistically remove the closed vault from all vault list caches
       queryClient.setQueriesData({ queryKey: ['get-vaults'] }, (old: unknown) =>
@@ -42,12 +53,6 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
       queryClient.invalidateQueries({ queryKey: ['api-plans'], refetchType: 'all' })
       queryClient.invalidateQueries({ queryKey: ['api-activity'], refetchType: 'all' })
       router.push('/vaults')
-      postEvent({
-        eventType: 'vault_closed',
-        actorId: publicKey!.toBase58(),
-        vaultAddress: vaultAddress.toBase58(),
-        signature,
-      })
     },
     onError: (error: Error) => {
       toast.error(error.message)
