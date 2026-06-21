@@ -10,3 +10,8 @@ frontend/next-env.d.ts
 frontend/.env.local
 
 workers/.wrangler
+
+# Agent tooling artifacts — never committed
+.opencode/
+.superpowers/
+docs/superpowers/
