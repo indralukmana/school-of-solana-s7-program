@@ -137,7 +137,7 @@ export async function handleGetPlans(request: IRequest, env: { DB: D1Database })
   const owner = url.searchParams.get('owner')
   const tag = url.searchParams.get('tag')
 
-  let query = 'SELECT * FROM plans WHERE onchain_tx IS NOT NULL'
+  let query = 'SELECT * FROM plans WHERE 1=1'
   const params: string[] = []
 
   if (owner) {

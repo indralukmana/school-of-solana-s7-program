@@ -19,5 +19,8 @@ pub struct CloseVault<'info> {
 }
 
 pub fn close_vault_handler(_ctx: Context<CloseVault>) -> Result<()> {
+    // Accounts are automatically closed by Anchor's `close = owner` constraint.
+    // This handler intentionally does nothing — Anchor handles rent return
+    // and account zeroing during account deserialization.
     Ok(())
 }

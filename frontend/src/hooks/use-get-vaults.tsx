@@ -13,6 +13,8 @@ export function useGetVaults() {
 
   return useQuery({
     queryKey: ['get-vaults', { publicKey }],
+    staleTime: 0,
+    refetchInterval: 30_000,
     queryFn: async () => {
       if (!publicKey) return []
       const vaults = await program.account.vaultAccount.all([{ memcmp: { offset: 8, bytes: publicKey.toBase58() } }])
