@@ -1,10 +1,11 @@
 'use client'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { AppHero } from '@/components/app-hero'
 import { useGetVaults } from '@/hooks/use-get-vaults'
+import { useApiPlans } from '@/hooks/use-api-plans'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -30,8 +31,18 @@ function VaultCardSkeleton() {
 export default function VaultListFeature() {
   const { publicKey } = useWallet()
   const getVaults = useGetVaults()
+  const apiPlans = useApiPlans(
+    publicKey ? { owner: publicKey.toBase58() } : undefined,
+  )
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+
+  const cancelledVaults = useMemo(() => {
+    if (!apiPlans.data) return new Set<string>()
+    return new Set(
+      apiPlans.data.filter((p) => p.cancelled).map((p) => p.vaultAddress),
+    )
+  }, [apiPlans.data])
 
   if (!publicKey) {
     return (
@@ -58,11 +69,13 @@ export default function VaultListFeature() {
   }
 
   const vaults = getVaults.data ?? []
+  const activeVaults = vaults.filter((v) => !cancelledVaults.has(v.publicKey.toBase58()))
+  const cancelledList = vaults.filter((v) => cancelledVaults.has(v.publicKey.toBase58()))
 
-  const filteredVaults = vaults.filter((vault) => {
+  const filteredVaults = (statusFilter === 'cancelled' ? cancelledList : activeVaults).filter((vault) => {
     const status = Object.keys(vault.account.status)[0]
     const matchesSearch = search === '' || vault.account.planTitle.toLowerCase().includes(search.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || status === statusFilter
+    const matchesStatus = statusFilter === 'all' || statusFilter === 'cancelled' || status === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -103,6 +116,9 @@ export default function VaultListFeature() {
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="locked">Locked</TabsTrigger>
             <TabsTrigger value="unlocked">Unlocked</TabsTrigger>
+            {cancelledList.length > 0 && (
+              <TabsTrigger value="cancelled">Cancelled ({cancelledList.length})</TabsTrigger>
+            )}
           </TabsList>
           <TabsContent value={statusFilter}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

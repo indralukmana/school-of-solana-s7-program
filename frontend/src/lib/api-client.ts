@@ -66,6 +66,7 @@ export interface PlanRecord extends PlanContent {
   contentHash: string
   ownerId: string
   onchainTx?: string
+  cancelled: number
   createdAt: string
 }
 

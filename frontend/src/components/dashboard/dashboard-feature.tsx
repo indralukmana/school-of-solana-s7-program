@@ -1,7 +1,7 @@
 'use client'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { PerformanceCards } from './performance-cards'
 import Link from 'next/link'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
@@ -12,12 +12,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Skeleton } from '../ui/skeleton'
 import { useInitializeVault } from '@/hooks/use-initialize-vault'
 import { useGetVaults } from '@/hooks/use-get-vaults'
+import { useApiPlans } from '@/hooks/use-api-plans'
 
 export function DashboardFeature() {
   const { publicKey } = useWallet()
   const [planTitle, setPlanTitle] = useState('')
   const initializeVault = useInitializeVault()
   const getVaults = useGetVaults()
+  const apiPlans = useApiPlans(
+    publicKey ? { owner: publicKey.toBase58() } : undefined,
+  )
+
+  const cancelledVaults = useMemo(() => {
+    if (!apiPlans.data) return new Set<string>()
+    return new Set(
+      apiPlans.data.filter((p) => p.cancelled).map((p) => p.vaultAddress),
+    )
+  }, [apiPlans.data])
 
   const handleCreate = () => {
     if (!planTitle) return
@@ -40,7 +51,8 @@ export function DashboardFeature() {
     )
   }
 
-  const vaults = getVaults.data ?? []
+  const allVaults = getVaults.data ?? []
+  const vaults = allVaults.filter((v) => !cancelledVaults.has(v.publicKey.toBase58()))
   const unlocked = vaults.filter((v) => Object.keys(v.account.status)[0] === 'unlocked')
   const totalSol = vaults.reduce((sum, v) => sum + v.excessLamports, 0) / LAMPORTS_PER_SOL
 

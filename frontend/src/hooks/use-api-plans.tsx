@@ -14,6 +14,7 @@ export function useApiPlan(planHash: string | null) {
 export function useApiPlans(filter?: { owner?: string; tag?: string }) {
   return useQuery<PlanRecord[]>({
     queryKey: ['api-plans', filter],
-    queryFn: () => getPlans(filter),
+    queryFn: () => getPlans(filter ?? {}),
+    enabled: !!filter?.owner,
   })
 }
