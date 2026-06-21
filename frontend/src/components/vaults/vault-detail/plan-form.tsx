@@ -67,7 +67,7 @@ export function PlanForm({ vaultAddress, planPda, vaultTitle }: PlanFormProps) {
     const validationErrors = validate()
     setErrors(validationErrors)
     if (validationErrors.length === 0) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://plan-vault-api.workers.dev'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://plan-vault-api.indralukmana.workers.dev'
       const content: PlanContent = {
         title: vaultTitle,
         description: planDetails.description,

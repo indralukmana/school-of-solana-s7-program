@@ -20,7 +20,7 @@ export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | 
       if (!publicKey) throw new Error('Wallet not connected')
       if (!planAddress) throw new Error('Plan address not available')
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://plan-vault-api.workers.dev'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://plan-vault-api.indralukmana.workers.dev'
       const fullContent = { ...planContent, contentUri: `${apiUrl}/api/plans/placeholder` }
 
       // 1. Submit content to API

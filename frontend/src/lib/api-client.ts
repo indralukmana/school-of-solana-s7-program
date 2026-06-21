@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://plan-vault-api.workers.dev'
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://plan-vault-api.indralukmana.workers.dev'
 
 let cachedToken: string | null = null
 
