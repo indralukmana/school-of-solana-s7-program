@@ -77,12 +77,19 @@ export function PlanConfirmation({
   const hasOutcome = (outcomes?.length ?? 0) > 0
 
   const handleClose = (signature: string) => {
+    const vaultKey = vaultAddress.toBase58()
     transactionToast(signature)
-    queryClient.removeQueries({ queryKey: ['get-vaults'] })
-    queryClient.removeQueries({ queryKey: ['get-vault'] })
-    queryClient.removeQueries({ queryKey: ['api-analytics'] })
-    queryClient.removeQueries({ queryKey: ['api-plans'] })
-    queryClient.removeQueries({ queryKey: ['api-activity'] })
+
+    // Optimistically remove the closed vault from all vault list caches
+    queryClient.setQueriesData({ queryKey: ['get-vaults'] }, (old: unknown) =>
+      Array.isArray(old) ? old.filter((v: { publicKey: { toBase58: () => string } }) => v.publicKey.toBase58() !== vaultKey) : old,
+    )
+
+    // Invalidate other queries — keep stale data visible, refetch in background
+    queryClient.invalidateQueries({ queryKey: ['get-vault'], refetchType: 'all' })
+    queryClient.invalidateQueries({ queryKey: ['api-analytics'], refetchType: 'all' })
+    queryClient.invalidateQueries({ queryKey: ['api-plans'], refetchType: 'all' })
+    queryClient.invalidateQueries({ queryKey: ['api-activity'], refetchType: 'all' })
     postEvent({
       eventType: 'vault_closed',
       actorId: publicKey!.toBase58(),

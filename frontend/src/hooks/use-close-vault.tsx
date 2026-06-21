@@ -28,12 +28,19 @@ export function useCloseVault(vaultAddress: PublicKey, planAddress: PublicKey | 
         .rpc()
     },
     onSuccess: (signature) => {
+      const vaultKey = vaultAddress.toBase58()
       transactionToast(signature)
-      queryClient.removeQueries({ queryKey: ['get-vaults'] })
-      queryClient.removeQueries({ queryKey: ['get-vault'] })
-      queryClient.removeQueries({ queryKey: ['api-analytics'] })
-      queryClient.removeQueries({ queryKey: ['api-plans'] })
-      queryClient.removeQueries({ queryKey: ['api-activity'] })
+
+      // Optimistically remove the closed vault from all vault list caches
+      queryClient.setQueriesData({ queryKey: ['get-vaults'] }, (old: unknown) =>
+        Array.isArray(old) ? old.filter((v: { publicKey: { toBase58: () => string } }) => v.publicKey.toBase58() !== vaultKey) : old,
+      )
+
+      // Invalidate other queries — keep stale data visible, refetch in background
+      queryClient.invalidateQueries({ queryKey: ['get-vault'], refetchType: 'all' })
+      queryClient.invalidateQueries({ queryKey: ['api-analytics'], refetchType: 'all' })
+      queryClient.invalidateQueries({ queryKey: ['api-plans'], refetchType: 'all' })
+      queryClient.invalidateQueries({ queryKey: ['api-activity'], refetchType: 'all' })
       router.push('/vaults')
       postEvent({
         eventType: 'vault_closed',
