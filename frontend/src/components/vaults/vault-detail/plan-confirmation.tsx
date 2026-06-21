@@ -168,7 +168,7 @@ export function PlanConfirmation({
       <CardContent className="space-y-4">
         {richPlan && <PlanDetails plan={richPlan} />}
 
-        <OutcomePanel planHash={planHash} />
+        <OutcomePanel planHash={planHash} vaultAddress={vaultAddress.toBase58()} />
 
         <div className="border-t border-white/[0.06] pt-4 flex items-center justify-between">
           <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>

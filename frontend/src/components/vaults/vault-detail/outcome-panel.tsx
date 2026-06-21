@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useApiOutcomes } from '@/hooks/use-api-outcomes'
-import { addOutcome } from '@/lib/api-client'
+import { addOutcome, postEvent } from '@/lib/api-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -12,7 +13,8 @@ import { Edit3, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 
-export function OutcomePanel({ planHash }: { planHash: string }) {
+export function OutcomePanel({ planHash, vaultAddress }: { planHash: string; vaultAddress: string }) {
+  const { publicKey } = useWallet()
   const { data: outcomes } = useApiOutcomes(planHash)
   const queryClient = useQueryClient()
   const existing = outcomes?.[0]
@@ -34,6 +36,14 @@ export function OutcomePanel({ planHash }: { planHash: string }) {
       queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
+      if (publicKey) {
+        postEvent({
+          eventType: 'outcome_added',
+          actorId: publicKey.toBase58(),
+          vaultAddress,
+          metadata: JSON.stringify({ pnlLamports }),
+        })
+      }
       setEditing(false)
       toast.success(existing ? 'Outcome updated' : 'Outcome added')
     } catch {
