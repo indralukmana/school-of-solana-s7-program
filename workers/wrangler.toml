@@ -13,4 +13,4 @@ bucket_name = "plan-vault-images"
 
 [vars]
 JWT_SECRET = "replace-with-generated-secret"
-CORS_ORIGIN = "https://plan-vault-ackee-program-task.vercel.app"
+CORS_ORIGIN = "https://trading-plan-vault.indralukmana.workers.dev"

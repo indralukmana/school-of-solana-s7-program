@@ -1,4 +1,3 @@
-import path from 'path'
 import type { NextConfig } from 'next'
 
 function buildCsp(): string {
@@ -9,12 +8,13 @@ function buildCsp(): string {
     'https://*.solana.com',
     'wss://*.solana.com',
     'https://*.helius-rpc.com',
-    ...(isDev ? ['http://localhost:*', 'ws://localhost:*', 'https://*.workers.dev'] : []),
+    'https://plan-vault-api.indralukmana.workers.dev',
+    ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
   ].join(' ')
 
-  const styleSrc = ["'self'", "'unsafe-inline'", ...(isDev ? ['https://fonts.googleapis.com'] : [])].join(' ')
+  const styleSrc = ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'].join(' ')
 
-  const fontSrc = ["'self'", ...(isDev ? ['https://fonts.gstatic.com'] : [])].join(' ')
+  const fontSrc = ["'self'", 'https://fonts.gstatic.com'].join(' ')
 
   return [
     "default-src 'self'",
@@ -28,7 +28,6 @@ function buildCsp(): string {
 }
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname, '..'),
   async headers() {
     return [
       {
@@ -44,3 +43,5 @@ const nextConfig: NextConfig = {
 }
 
 export default nextConfig
+
+import('@opennextjs/cloudflare').then(m => m.initOpenNextCloudflareForDev());

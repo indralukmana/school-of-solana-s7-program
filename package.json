@@ -18,6 +18,9 @@
     "lint": "pnpm --dir frontend lint",
     "format": "pnpm --dir frontend format",
     "format:check": "pnpm --dir frontend format:check",
-    "ci": "pnpm install:all && pnpm build:program && pnpm test:program && pnpm lint && pnpm format:check && pnpm build:frontend"
+    "ci": "pnpm install:all && pnpm build:program && pnpm test:program && pnpm lint && pnpm format:check && pnpm build:frontend",
+    "pages:build": "NEXT_PUBLIC_API_URL=https://plan-vault-api.indralukmana.workers.dev pnpm --dir frontend preview",
+    "pages:deploy": "NEXT_PUBLIC_API_URL=https://plan-vault-api.indralukmana.workers.dev pnpm --dir frontend deploy",
+    "pages:preview": "pnpm --dir frontend preview"
   }
 }
