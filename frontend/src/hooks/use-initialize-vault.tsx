@@ -29,6 +29,7 @@ export function useInitializeVault() {
     onSuccess: ({ signature, vaultPda }) => {
       transactionToast(signature)
       queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
+      queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
       postEvent({
         eventType: 'vault_created',

@@ -56,6 +56,7 @@ export function useSubmitPlan(vaultAddress: PublicKey, planAddress: PublicKey | 
       queryClient.invalidateQueries({ queryKey: ['get-vault'] })
       queryClient.invalidateQueries({ queryKey: ['get-plan'] })
       queryClient.invalidateQueries({ queryKey: ['api-plans'] })
+      queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
       queryClient.invalidateQueries({ queryKey: ['api-activity'] })
     },
     onError: (error: Error) => {

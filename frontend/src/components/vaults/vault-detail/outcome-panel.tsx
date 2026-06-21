@@ -31,6 +31,9 @@ export function OutcomePanel({ planHash }: { planHash: string }) {
         settledAt: new Date().toISOString(),
       })
       queryClient.invalidateQueries({ queryKey: ['api-outcomes', planHash] })
+      queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
+      queryClient.invalidateQueries({ queryKey: ['api-activity'] })
+      queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
       setEditing(false)
       toast.success(existing ? 'Outcome updated' : 'Outcome added')
     } catch {

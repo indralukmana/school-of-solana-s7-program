@@ -80,6 +80,9 @@ export function PlanConfirmation({
     transactionToast(signature)
     queryClient.invalidateQueries({ queryKey: ['get-vaults'] })
     queryClient.invalidateQueries({ queryKey: ['get-vault'] })
+    queryClient.invalidateQueries({ queryKey: ['api-analytics'] })
+    queryClient.invalidateQueries({ queryKey: ['api-plans'] })
+    queryClient.invalidateQueries({ queryKey: ['api-activity'] })
     postEvent({
       eventType: 'vault_closed',
       actorId: publicKey!.toBase58(),
