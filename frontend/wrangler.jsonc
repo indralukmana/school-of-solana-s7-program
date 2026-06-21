@@ -3,6 +3,7 @@
 	"main": ".open-next/worker.js",
 	"name": "trading-plan-vault",
 	"compatibility_date": "2026-06-20",
+	"keep_names": false,
 	"compatibility_flags": [
 		"nodejs_compat",
 		"global_fetch_strictly_public"
